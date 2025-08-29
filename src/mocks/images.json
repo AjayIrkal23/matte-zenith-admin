@@ -1,0 +1,96 @@
+[
+  {
+    "id": "img_001",
+    "name": "site_safety_check_001.jpg",
+    "imageURL": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
+    "imagePath": "safety_inspections/site_safety_check_001.jpg",
+    "violations": [
+      {
+        "name": "Helmet Missing",
+        "description": "Worker without helmet in construction zone",
+        "severity": "Critical"
+      }
+    ],
+    "uploadedAt": "2024-01-28T09:30:00Z",
+    "fileSize": 245760
+  },
+  {
+    "id": "img_002",
+    "name": "equipment_maintenance_002.jpg",
+    "imageURL": "https://images.unsplash.com/photo-1581094651181-2b2d0b749978?w=400&h=300&fit=crop",
+    "imagePath": "maintenance/equipment_maintenance_002.jpg",
+    "violations": [
+      {
+        "name": "Fire Hazard",
+        "description": "Unattended flame near combustible materials",
+        "severity": "High"
+      },
+      {
+        "name": "Dust",
+        "description": "Excessive dust accumulation on equipment",
+        "severity": "Medium"
+      }
+    ],
+    "uploadedAt": "2024-01-28T10:15:00Z",
+    "fileSize": 189440
+  },
+  {
+    "id": "img_003",
+    "name": "parking_area_003.jpg",
+    "imageURL": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop",
+    "imagePath": "parking/parking_area_003.jpg",
+    "violations": [
+      {
+        "name": "Parking",
+        "description": "Vehicle parked in no-parking zone",
+        "severity": "Low"
+      }
+    ],
+    "uploadedAt": "2024-01-28T11:45:00Z",
+    "fileSize": 312320
+  },
+  {
+    "id": "img_004",
+    "name": "work_zone_safety_004.jpg",
+    "imageURL": "https://images.unsplash.com/photo-1581094289569-981a0673b6ac?w=400&h=300&fit=crop",
+    "imagePath": "safety_inspections/work_zone_safety_004.jpg",
+    "violations": [
+      {
+        "name": "Helmet Missing",
+        "description": "Multiple workers without safety helmets",
+        "severity": "Critical"
+      },
+      {
+        "name": "Fire Hazard",
+        "description": "Open flame in restricted area",
+        "severity": "High"
+      }
+    ],
+    "uploadedAt": "2024-01-28T14:20:00Z",
+    "fileSize": 278912
+  },
+  {
+    "id": "img_005",
+    "name": "dust_control_005.jpg",
+    "imageURL": "https://images.unsplash.com/photo-1581094794329-e7b6c1c1c7a5?w=400&h=300&fit=crop",
+    "imagePath": "environmental/dust_control_005.jpg",
+    "violations": [
+      {
+        "name": "Dust",
+        "description": "Poor dust control measures",
+        "severity": "Medium"
+      }
+    ],
+    "uploadedAt": "2024-01-28T15:30:00Z",
+    "fileSize": 156672
+  },
+  {
+    "id": "img_006",
+    "name": "vehicle_inspection_006.jpg",
+    "imageURL": "https://images.unsplash.com/photo-1581094804292-8c48b8c8b8b8?w=400&h=300&fit=crop",
+    "imagePath": "vehicles/vehicle_inspection_006.jpg",
+    "violations": [],
+    "uploadedAt": "2024-01-28T16:10:00Z",
+    "fileSize": 201984
+  }
+]

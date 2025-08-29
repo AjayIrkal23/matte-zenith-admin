@@ -1,0 +1,82 @@
+[
+  {
+    "id": "usr_001",
+    "name": "Rajesh Kumar",
+    "email": "rajesh.kumar@adani.com",
+    "empid": "EMP001",
+    "department": "Safety Engineering",
+    "validatedImages": 45,
+    "createdAt": "2024-01-15T08:30:00Z",
+    "updatedAt": "2024-01-28T14:22:00Z"
+  },
+  {
+    "id": "usr_002",
+    "name": "Priya Sharma",
+    "email": "priya.sharma@adani.com",
+    "empid": "EMP002",
+    "department": "Operations",
+    "validatedImages": 38,
+    "createdAt": "2024-01-12T09:15:00Z",
+    "updatedAt": "2024-01-28T11:45:00Z"
+  },
+  {
+    "id": "usr_003",
+    "name": "Amit Patel",
+    "email": "amit.patel@adani.com",
+    "empid": "EMP003",
+    "department": "Quality Assurance",
+    "validatedImages": 52,
+    "createdAt": "2024-01-10T07:45:00Z",
+    "updatedAt": "2024-01-28T16:30:00Z"
+  },
+  {
+    "id": "usr_004",
+    "name": "Sunita Nair",
+    "email": "sunita.nair@adani.com",
+    "empid": "EMP004",
+    "department": "Safety Engineering",
+    "validatedImages": 29,
+    "createdAt": "2024-01-18T10:20:00Z",
+    "updatedAt": "2024-01-28T13:15:00Z"
+  },
+  {
+    "id": "usr_005",
+    "name": "Karthik Menon",
+    "email": "karthik.menon@adani.com",
+    "empid": "EMP005",
+    "department": "Operations",
+    "validatedImages": 41,
+    "createdAt": "2024-01-14T12:00:00Z",
+    "updatedAt": "2024-01-28T10:30:00Z"
+  },
+  {
+    "id": "usr_006",
+    "name": "Deepika Singh",
+    "email": "deepika.singh@adani.com",
+    "empid": "EMP006",
+    "department": "Quality Assurance",
+    "validatedImages": 33,
+    "createdAt": "2024-01-16T11:30:00Z",
+    "updatedAt": "2024-01-28T15:45:00Z"
+  },
+  {
+    "id": "usr_007",
+    "name": "Vikram Reddy",
+    "email": "vikram.reddy@adani.com",
+    "empid": "EMP007",
+    "department": "Safety Engineering",
+    "validatedImages": 47,
+    "createdAt": "2024-01-13T08:15:00Z",
+    "updatedAt": "2024-01-28T12:20:00Z"
+  },
+  {
+    "id": "usr_008",
+    "name": "Meera Joshi",
+    "email": "meera.joshi@adani.com",
+    "empid": "EMP008",
+    "department": "Operations",
+    "validatedImages": 36,
+    "createdAt": "2024-01-17T09:45:00Z",
+    "updatedAt": "2024-01-28T14:10:00Z"
+  }
+]
