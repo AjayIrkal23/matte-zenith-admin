@@ -1,31 +1,47 @@
-import { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Users, Images, CheckCircle, AlertTriangle, TrendingUp, Clock } from 'lucide-react';
-import { 
-  BarChart, 
-  Bar, 
-  LineChart, 
-  Line, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
-  Legend, 
+import { useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Users,
+  Images,
+  CheckCircle,
+  AlertTriangle,
+  TrendingUp,
+  Clock,
+} from "lucide-react";
+import {
+  BarChart,
+  Bar,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
   ResponsiveContainer,
-  ComposedChart 
-} from 'recharts';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { fetchUsers } from '@/store/slices/usersSlice';
-import { fetchImages } from '@/store/slices/imagesSlice';
-import { recomputeLeaderboard, selectTop3 } from '@/store/slices/leaderboardSlice';
-import { 
-  selectKpis, 
-  selectUsersByMonth, 
-  selectImagesTotalsByMonth, 
-  selectAiHumanDelta 
-} from '@/store/selectors/metricsSelectors';
+  ComposedChart,
+} from "recharts";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { fetchUsers } from "@/store/slices/usersSlice";
+import { fetchImages } from "@/store/slices/imagesSlice";
+import {
+  recomputeLeaderboard,
+  selectTop3,
+} from "@/store/slices/leaderboardSlice";
+import {
+  selectKpis,
+  selectUsersByMonth,
+  selectImagesTotalsByMonth,
+  selectAiHumanDelta,
+} from "@/store/selectors/metricsSelectors";
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -39,16 +55,16 @@ const containerVariants = {
 
 const itemVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: { 
-    opacity: 1, 
+  visible: {
+    opacity: 1,
     y: 0,
-    transition: { duration: 0.22 }
+    transition: { duration: 0.22 },
   },
 };
 
 export default function DashboardPage() {
   const dispatch = useAppDispatch();
-  
+
   const kpis = useAppSelector(selectKpis);
   const top3 = useAppSelector(selectTop3);
   const usersByMonth = selectUsersByMonth();
@@ -64,38 +80,38 @@ export default function DashboardPage() {
 
   const kpiCards = [
     {
-      title: 'Total Users',
+      title: "Total Users",
       value: kpis.totalUsers,
       icon: Users,
-      color: 'text-blue-400',
-      bgColor: 'bg-blue-400/10',
+      color: "text-blue-400",
+      bgColor: "bg-blue-400/10",
     },
     {
-      title: 'Total Images',
+      title: "Total Images",
       value: kpis.totalImages,
       icon: Images,
-      color: 'text-purple-400',
-      bgColor: 'bg-purple-400/10',
+      color: "text-purple-400",
+      bgColor: "bg-purple-400/10",
     },
     {
-      title: 'Images Validated',
+      title: "Images Validated",
       value: kpis.imagesValidated,
       icon: CheckCircle,
-      color: 'text-green-400',
-      bgColor: 'bg-green-400/10',
+      color: "text-green-400",
+      bgColor: "bg-green-400/10",
     },
     {
-      title: 'Violations Validated',
+      title: "Violations Validated",
       value: kpis.violationsValidated,
       icon: AlertTriangle,
-      color: 'text-orange-400',
-      bgColor: 'bg-orange-400/10',
+      color: "text-orange-400",
+      bgColor: "bg-orange-400/10",
     },
   ];
 
   return (
-    <motion.div 
-      className="p-6 space-y-6"
+    <motion.div
+      className="p-2 space-y-6"
       variants={containerVariants}
       initial="hidden"
       animate="visible"
@@ -103,11 +119,13 @@ export default function DashboardPage() {
       {/* Page Header */}
       <motion.div variants={itemVariants}>
         <h1 className="text-3xl font-bold text-text-primary mb-2">Dashboard</h1>
-        <p className="text-text-muted">Overview of safety monitoring activities</p>
+        <p className="text-text-muted">
+          Overview of safety monitoring activities
+        </p>
       </motion.div>
 
       {/* KPI Cards */}
-      <motion.div 
+      <motion.div
         className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
         variants={itemVariants}
       >
@@ -121,8 +139,12 @@ export default function DashboardPage() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-text-muted text-sm font-medium">{kpi.title}</p>
-                    <p className="text-2xl font-bold text-text-primary">{kpi.value}</p>
+                    <p className="text-text-muted text-sm font-medium">
+                      {kpi.title}
+                    </p>
+                    <p className="text-2xl font-bold text-text-primary">
+                      {kpi.value}
+                    </p>
                   </div>
                   <div className={`p-3 rounded-lg ${kpi.bgColor}`}>
                     <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
@@ -144,28 +166,37 @@ export default function DashboardPage() {
                 <TrendingUp className="w-5 h-5" />
                 Users by Month
               </CardTitle>
-              <CardDescription>Monthly user registration trends</CardDescription>
+              <CardDescription>
+                Monthly user registration trends
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={usersByMonth}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--panel-border))" />
-                    <XAxis 
-                      dataKey="month" 
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--panel-border))"
+                    />
+                    <XAxis
+                      dataKey="month"
                       stroke="hsl(var(--text-muted))"
                       fontSize={12}
                     />
                     <YAxis stroke="hsl(var(--text-muted))" fontSize={12} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
-                        backgroundColor: 'hsl(var(--panel-bg))',
-                        border: '1px solid hsl(var(--panel-border))',
-                        borderRadius: '8px',
-                        color: 'hsl(var(--text-primary))'
+                        backgroundColor: "black",
+                        border: "1px solid hsl(var(--panel-border))",
+                        borderRadius: "8px",
+                        color: "hsl(var(--text-primary))",
                       }}
                     />
-                    <Bar dataKey="users" fill="hsl(var(--adani-primary))" radius={[2, 2, 0, 0]} />
+                    <Bar
+                      dataKey="users"
+                      fill="hsl(var(--adani-primary))"
+                      radius={[2, 2, 0, 0]}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -181,41 +212,50 @@ export default function DashboardPage() {
                 <Images className="w-5 h-5" />
                 Images: Total vs Validated
               </CardTitle>
-              <CardDescription>Image processing progress over time</CardDescription>
+              <CardDescription>
+                Image processing progress over time
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="h-64">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={imagesTotals}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--panel-border))" />
-                    <XAxis 
-                      dataKey="month" 
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      stroke="hsl(var(--panel-border))"
+                    />
+                    <XAxis
+                      dataKey="month"
                       stroke="hsl(var(--text-muted))"
                       fontSize={12}
                     />
                     <YAxis stroke="hsl(var(--text-muted))" fontSize={12} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{
-                        backgroundColor: 'hsl(var(--panel-bg))',
-                        border: '1px solid hsl(var(--panel-border))',
-                        borderRadius: '8px',
-                        color: 'hsl(var(--text-primary))'
+                        backgroundColor: "black",
+                        border: "1px solid hsl(var(--panel-border))",
+                        borderRadius: "8px",
+                        color: "hsl(var(--text-primary))",
                       }}
                     />
                     <Legend />
-                    <Bar 
-                      dataKey="totalImages" 
-                      fill="hsl(var(--adani-secondary))" 
+                    <Bar
+                      dataKey="totalImages"
+                      fill="hsl(var(--adani-secondary))"
                       name="Total Images"
                       radius={[2, 2, 0, 0]}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="validatedImages" 
-                      stroke="hsl(var(--adani-primary))" 
+                    <Line
+                      type="monotone"
+                      dataKey="validatedImages"
+                      stroke="hsl(var(--adani-primary))"
                       strokeWidth={3}
                       name="Validated Images"
-                      dot={{ fill: 'hsl(var(--adani-primary))', strokeWidth: 2, r: 4 }}
+                      dot={{
+                        fill: "hsl(var(--adani-primary))",
+                        strokeWidth: 2,
+                        r: 4,
+                      }}
                     />
                   </ComposedChart>
                 </ResponsiveContainer>
@@ -231,30 +271,45 @@ export default function DashboardPage() {
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <Card className="bg-panel-bg border-panel-border">
             <CardHeader>
-              <CardTitle className="text-text-primary">Top Performers</CardTitle>
-              <CardDescription>Leading users by validated images</CardDescription>
+              <CardTitle className="text-text-primary">
+                Top Performers
+              </CardTitle>
+              <CardDescription>
+                Leading users by validated images
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
                 {top3.map((user, index) => (
-                  <div 
-                    key={user.id} 
+                  <div
+                    key={user.id}
                     className="flex items-center justify-between p-3 rounded-lg bg-hover-overlay/30 hover:bg-hover-overlay/50 transition-colors"
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
-                        index === 0 ? 'bg-yellow-500/20 text-yellow-300' :
-                        index === 1 ? 'bg-gray-400/20 text-gray-300' :
-                        'bg-orange-500/20 text-orange-300'
-                      }`}>
+                      <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm ${
+                          index === 0
+                            ? "bg-yellow-500/20 text-yellow-300"
+                            : index === 1
+                            ? "bg-gray-400/20 text-gray-300"
+                            : "bg-orange-500/20 text-orange-300"
+                        }`}
+                      >
                         {index + 1}
                       </div>
                       <div>
-                        <p className="font-medium text-text-primary">{user.name}</p>
-                        <p className="text-sm text-text-muted">{user.department}</p>
+                        <p className="font-medium text-text-primary">
+                          {user.name}
+                        </p>
+                        <p className="text-sm text-text-muted">
+                          {user.department}
+                        </p>
                       </div>
                     </div>
-                    <Badge variant="secondary" className="bg-adani-primary/20 text-adani-primary border-adani-primary/30">
+                    <Badge
+                      variant="secondary"
+                      className="bg-adani-primary/20 text-adani-primary border-adani-primary/30"
+                    >
                       {user.validatedImages} images
                     </Badge>
                   </div>
@@ -272,7 +327,9 @@ export default function DashboardPage() {
                 <Clock className="w-5 h-5" />
                 AI–Human Δ
               </CardTitle>
-              <CardDescription>Average time difference (seconds)</CardDescription>
+              <CardDescription>
+                Average time difference (seconds)
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="text-center space-y-4">
@@ -282,15 +339,23 @@ export default function DashboardPage() {
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <span className="text-text-muted">AI Average:</span>
-                    <span className="text-green-400">{aiHumanDelta.aiAvgSec}s</span>
+                    <span className="text-green-400">
+                      {aiHumanDelta.aiAvgSec}s
+                    </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-text-muted">Human Average:</span>
-                    <span className="text-orange-400">{aiHumanDelta.humanAvgSec}s</span>
+                    <span className="text-orange-400">
+                      {aiHumanDelta.humanAvgSec}s
+                    </span>
                   </div>
                 </div>
                 <p className="text-xs text-text-muted">
-                  AI is {Math.round((aiHumanDelta.deltaAvgSec / aiHumanDelta.humanAvgSec) * 100)}% faster
+                  AI is{" "}
+                  {Math.round(
+                    (aiHumanDelta.deltaAvgSec / aiHumanDelta.humanAvgSec) * 100
+                  )}
+                  % faster
                 </p>
               </div>
             </CardContent>

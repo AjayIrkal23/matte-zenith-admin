@@ -1,23 +1,43 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Trophy, Crown, Medal, Award, TrendingUp, Users, Search, Filter, RotateCcw } from 'lucide-react';
-import confetti from 'canvas-confetti';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { 
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Trophy,
+  Crown,
+  Medal,
+  Award,
+  TrendingUp,
+  Users,
+  Search,
+  Filter,
+  RotateCcw,
+} from "lucide-react";
+import confetti from "canvas-confetti";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
   recomputeLeaderboard,
   selectTop3,
   selectLeaderboardAll,
   selectLeaderboardStatus,
-  selectLeaderboardError
-} from '@/store/slices/leaderboardSlice';
-import { fetchUsers, selectTotalValidatedImages, selectUniqueDepartments } from '@/store/slices/usersSlice';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+  selectLeaderboardError,
+} from "@/store/slices/leaderboardSlice";
+import {
+  fetchUsers,
+  selectTotalValidatedImages,
+  selectUniqueDepartments,
+} from "@/store/slices/usersSlice";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   Table,
   TableBody,
@@ -25,8 +45,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
-import { toast } from '@/hooks/use-toast';
+} from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 
 export default function LeaderboardPage() {
   const dispatch = useAppDispatch();
@@ -38,22 +58,29 @@ export default function LeaderboardPage() {
 
   // Confetti on first load
   const [hasShownConfetti, setHasShownConfetti] = useState(false);
-  
+
   // Filters state
   const uniqueDepartments = useAppSelector(selectUniqueDepartments);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState<string | undefined>();
-  const [validatedImagesRange, setValidatedImagesRange] = useState<[number, number]>([0, 100]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedDepartment, setSelectedDepartment] = useState<
+    string | undefined
+  >();
+  const [validatedImagesRange, setValidatedImagesRange] = useState<
+    [number, number]
+  >([0, 100]);
 
-  const maxValidatedImages = Math.max(...allUsers.map(u => u.validatedImages), 100);
+  const maxValidatedImages = Math.max(
+    ...allUsers.map((u) => u.validatedImages),
+    100
+  );
 
   useEffect(() => {
     const loadData = async () => {
       await dispatch(fetchUsers());
       dispatch(recomputeLeaderboard());
     };
-    
-    if (status === 'idle') {
+
+    if (status === "idle") {
       loadData();
     }
   }, [status, dispatch]);
@@ -61,9 +88,9 @@ export default function LeaderboardPage() {
   useEffect(() => {
     if (error) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: error,
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   }, [error]);
@@ -74,11 +101,11 @@ export default function LeaderboardPage() {
       confetti({
         particleCount: 100,
         spread: 70,
-        origin: { y: 0.6 }
+        origin: { y: 0.6 },
       });
       toast({
-        title: '🎉 Congratulations!',
-        description: 'You are in dummy #2 position.',
+        title: "🎉 Congratulations!",
+        description: "You are in dummy #2 position.",
         duration: 5000,
       });
       setHasShownConfetti(true);
@@ -86,44 +113,51 @@ export default function LeaderboardPage() {
   }, [allUsers.length, hasShownConfetti]);
 
   // Filter users based on criteria
-  const filteredUsers = allUsers.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredUsers = allUsers.filter((user) => {
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.empid.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesDepartment = !selectedDepartment || user.department === selectedDepartment;
-    const matchesRange = user.validatedImages >= validatedImagesRange[0] && 
-                        user.validatedImages <= validatedImagesRange[1];
+    const matchesDepartment =
+      !selectedDepartment || user.department === selectedDepartment;
+    const matchesRange =
+      user.validatedImages >= validatedImagesRange[0] &&
+      user.validatedImages <= validatedImagesRange[1];
     return matchesSearch && matchesDepartment && matchesRange;
   });
 
   const getRankIcon = (rank: number) => {
     switch (rank) {
-      case 1: return Crown;
-      case 2: return Medal;
-      case 3: return Award;
-      default: return Trophy;
+      case 1:
+        return Crown;
+      case 2:
+        return Medal;
+      case 3:
+        return Award;
+      default:
+        return Trophy;
     }
   };
 
   const getRankBadgeClass = (rank: number) => {
     switch (rank) {
-      case 1: return 'top-rank-1';
-      case 2: return 'top-rank-2';
-      case 3: return 'top-rank-3';
-      default: return 'bg-hover-overlay/50';
+      case 1:
+        return "top-rank-1";
+      case 2:
+        return "top-rank-2";
+      case 3:
+        return "top-rank-3";
+      default:
+        return "bg-hover-overlay/50";
     }
   };
 
   const getInitials = (name: string) => {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
-  };
-
-  const getDepartmentBadgeVariant = (department: string) => {
-    switch (department) {
-      case 'Safety Engineering': return 'destructive';
-      case 'Operations': return 'default';
-      case 'Quality Assurance': return 'secondary';
-      default: return 'outline';
-    }
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
@@ -137,7 +171,9 @@ export default function LeaderboardPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-text-primary">Leaderboard</h1>
-          <p className="text-text-muted mt-1">Top performers based on validated images</p>
+          <p className="text-text-muted mt-1">
+            Top performers based on validated images
+          </p>
         </div>
       </div>
 
@@ -151,7 +187,9 @@ export default function LeaderboardPage() {
               </div>
               <div>
                 <p className="text-sm text-text-muted">Total Users</p>
-                <p className="text-2xl font-bold text-text-primary">{allUsers.length}</p>
+                <p className="text-2xl font-bold text-text-primary">
+                  {allUsers.length}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -165,7 +203,9 @@ export default function LeaderboardPage() {
               </div>
               <div>
                 <p className="text-sm text-text-muted">Total Validations</p>
-                <p className="text-2xl font-bold text-text-primary">{totalValidatedImages}</p>
+                <p className="text-2xl font-bold text-text-primary">
+                  {totalValidatedImages}
+                </p>
               </div>
             </div>
           </CardContent>
@@ -180,7 +220,9 @@ export default function LeaderboardPage() {
               <div>
                 <p className="text-sm text-text-muted">Average Score</p>
                 <p className="text-2xl font-bold text-text-primary">
-                  {allUsers.length > 0 ? Math.round(totalValidatedImages / allUsers.length) : 0}
+                  {allUsers.length > 0
+                    ? Math.round(totalValidatedImages / allUsers.length)
+                    : 0}
                 </p>
               </div>
             </div>
@@ -198,10 +240,13 @@ export default function LeaderboardPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {status === 'loading' ? (
+            {status === "loading" ? (
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-48 bg-hover-overlay/30 rounded-xl animate-pulse shimmer" />
+                  <div
+                    key={i}
+                    className="h-48 bg-hover-overlay/30 rounded-xl animate-pulse shimmer"
+                  />
                 ))}
               </div>
             ) : (
@@ -209,58 +254,81 @@ export default function LeaderboardPage() {
                 {top3.map((user, index) => {
                   const rank = index + 1;
                   const IconComponent = getRankIcon(rank);
-                  
+
                   return (
                     <motion.div
                       key={user.id}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ 
-                        duration: 0.5, 
+                      transition={{
+                        duration: 0.5,
                         delay: index * 0.1,
                         type: "spring",
-                        stiffness: 100
+                        stiffness: 100,
                       }}
                     >
-                      <Card className={`glass-panel card-hover ${getRankBadgeClass(rank)}`}>
-                        <CardContent className="p-6 text-center space-y-4">
+                      <Card
+                        className={`glass-panel card-hover ${getRankBadgeClass(
+                          rank
+                        )}`}
+                      >
+                        <CardContent className="p-6 text-center space-y-1">
                           <div className="relative">
                             <Avatar className="w-20 h-20 mx-auto border-4 border-white/20">
                               <AvatarFallback className="bg-adani-primary text-white text-xl font-bold">
                                 {getInitials(user.name)}
                               </AvatarFallback>
                             </Avatar>
-                            <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center ${
-                              rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : 'bg-amber-600'
-                            }`}>
+                            <div
+                              className={`absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center ${
+                                rank === 1
+                                  ? "bg-yellow-500"
+                                  : rank === 2
+                                  ? "bg-gray-400"
+                                  : "bg-amber-600"
+                              }`}
+                            >
                               <IconComponent className="w-4 h-4 text-white" />
                             </div>
                           </div>
 
                           <div className="space-y-2">
-                            <h3 className="font-bold text-lg text-text-primary">{user.name}</h3>
-                            <Badge variant={getDepartmentBadgeVariant(user.department)} className="text-xs">
-                              {user.department}
-                            </Badge>
+                            <h3 className="font-bold text-lg text-text-primary">
+                              {user.name}
+                            </h3>
+                            <Badge className="text-xs">{user.department}</Badge>
                           </div>
 
                           <motion.div
                             className="space-y-1"
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
-                            transition={{ duration: 0.5, delay: 0.2 + index * 0.1 }}
+                            transition={{
+                              duration: 0.5,
+                              delay: 0.2 + index * 0.1,
+                            }}
                           >
                             <div className="text-3xl font-bold text-adani-primary animate-count-up">
                               {user.validatedImages}
                             </div>
-                            <p className="text-sm text-text-muted">Validated Images</p>
+                            <p className="text-sm text-text-muted">
+                              Validated Images
+                            </p>
                           </motion.div>
 
                           <div className="flex items-center justify-center gap-2">
-                            <div className={`w-2 h-2 rounded-full ${
-                              rank === 1 ? 'bg-yellow-500' : rank === 2 ? 'bg-gray-400' : 'bg-amber-600'
-                            }`} />
-                            <span className="text-sm text-text-muted">Rank #{rank}</span>
+                            <div
+                              className={`w-2 h-2 rounded-full ${
+                                rank === 1
+                                  ? "bg-yellow-500"
+                                  : rank === 2
+                                  ? "bg-gray-400"
+                                  : "bg-amber-600"
+                              }`}
+                            />
+                            <span className="text-sm text-text-muted">
+                              Rank #{rank}
+                            </span>
                           </div>
                         </CardContent>
                       </Card>
@@ -281,10 +349,13 @@ export default function LeaderboardPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {status === 'loading' ? (
+          {status === "loading" ? (
             <div className="space-y-3">
               {[...Array(8)].map((_, i) => (
-                <div key={i} className="h-16 bg-hover-overlay/30 rounded-lg animate-pulse shimmer" />
+                <div
+                  key={i}
+                  className="h-16 bg-hover-overlay/30 rounded-lg animate-pulse shimmer"
+                />
               ))}
             </div>
           ) : (
@@ -293,17 +364,23 @@ export default function LeaderboardPage() {
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-panel-border">
                     <TableHead className="text-text-muted w-16">Rank</TableHead>
-                    <TableHead className="text-text-muted">User</TableHead>
-                    <TableHead className="text-text-muted">Department</TableHead>
-                    <TableHead className="text-text-muted">Employee ID</TableHead>
-                    <TableHead className="text-text-muted text-right">Validated Images</TableHead>
+                    <TableHead className="text-text-muted ">User</TableHead>
+                    <TableHead className="text-text-muted">
+                      Department
+                    </TableHead>
+                    <TableHead className="text-text-muted">
+                      Employee ID
+                    </TableHead>
+                    <TableHead className="text-text-muted text-right">
+                      Validated Images
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {allUsers.map((user, index) => {
                     const rank = index + 1;
                     const isTopThree = rank <= 3;
-                    
+
                     return (
                       <motion.tr
                         key={user.id}
@@ -311,16 +388,21 @@ export default function LeaderboardPage() {
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.02 }}
                         className={`hover:bg-hover-overlay/50 border-panel-border transition-colors ${
-                          isTopThree ? 'bg-adani-primary/5' : ''
+                          isTopThree ? "bg-adani-primary/5" : ""
                         }`}
                       >
                         <TableCell>
-                          <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
-                            rank === 1 ? 'bg-yellow-500 text-white' :
-                            rank === 2 ? 'bg-gray-400 text-white' :
-                            rank === 3 ? 'bg-amber-600 text-white' :
-                            'bg-hover-overlay text-text-muted'
-                          }`}>
+                          <div
+                            className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${
+                              rank === 1
+                                ? "bg-yellow-500 text-white"
+                                : rank === 2
+                                ? "bg-gray-400 text-white"
+                                : rank === 3
+                                ? "bg-amber-600 text-white"
+                                : "bg-hover-overlay text-text-white/50"
+                            }`}
+                          >
                             {rank}
                           </div>
                         </TableCell>
@@ -332,13 +414,17 @@ export default function LeaderboardPage() {
                               </AvatarFallback>
                             </Avatar>
                             <div>
-                              <div className="font-medium text-text-primary">{user.name}</div>
-                              <div className="text-xs text-text-muted">{user.email}</div>
+                              <div className="font-medium text-text-primary">
+                                {user.name}
+                              </div>
+                              <div className="text-xs text-text-muted">
+                                {user.email}
+                              </div>
                             </div>
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={getDepartmentBadgeVariant(user.department)} className="text-xs">
+                          <Badge variant={"outline"} className="text-xs">
                             {user.department}
                           </Badge>
                         </TableCell>
@@ -348,9 +434,13 @@ export default function LeaderboardPage() {
                           </code>
                         </TableCell>
                         <TableCell className="text-right">
-                          <span className={`font-semibold ${
-                            isTopThree ? 'text-adani-primary' : 'text-text-primary'
-                          }`}>
+                          <span
+                            className={`font-semibold ${
+                              isTopThree
+                                ? "text-adani-primary"
+                                : "text-text-primary"
+                            }`}
+                          >
                             {user.validatedImages}
                           </span>
                         </TableCell>
@@ -360,10 +450,12 @@ export default function LeaderboardPage() {
                 </TableBody>
               </Table>
 
-              {allUsers.length === 0 && status === 'succeeded' && (
+              {allUsers.length === 0 && status === "succeeded" && (
                 <div className="text-center py-12">
                   <Trophy className="w-16 h-16 text-text-muted mx-auto mb-4 opacity-50" />
-                  <p className="text-text-muted">No users found. Add some users to see the leaderboard.</p>
+                  <p className="text-text-muted">
+                    No users found. Add some users to see the leaderboard.
+                  </p>
                 </div>
               )}
             </div>

@@ -1,22 +1,35 @@
-import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Search, Filter, RotateCcw } from 'lucide-react';
-import { useAppDispatch, useAppSelector } from '@/store';
-import { fetchUsers, deleteUser, selectUsers, selectUsersStatus, selectUsersError, selectUniqueDepartments } from '@/store/slices/usersSlice';
-import { 
-  setSelectedDepartment, 
-  setValidatedImagesRange, 
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { Plus, Edit, Trash2, Search, Filter, RotateCcw } from "lucide-react";
+import { useAppDispatch, useAppSelector } from "@/store";
+import {
+  fetchUsers,
+  deleteUser,
+  selectUsers,
+  selectUsersStatus,
+  selectUsersError,
+  selectUniqueDepartments,
+} from "@/store/slices/usersSlice";
+import {
+  setSelectedDepartment,
+  setValidatedImagesRange,
   setSearchQuery,
   selectSelectedDepartment,
   selectValidatedImagesRange,
-  selectUsersSearchQuery
-} from '@/store/slices/usersUiSlice';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Slider } from '@/components/ui/slider';
+  selectUsersSearchQuery,
+} from "@/store/slices/usersUiSlice";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import {
   Table,
   TableBody,
@@ -24,7 +37,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -34,10 +47,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
-import { toast } from '@/hooks/use-toast';
-import { UserFormModal } from '@/components/admin/UserFormModal';
-import { IUser } from '@/types/admin';
+} from "@/components/ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
+import { UserFormModal } from "@/components/admin/UserFormModal";
+import { IUser } from "@/types/admin";
 
 export default function UsersPage() {
   const dispatch = useAppDispatch();
@@ -45,7 +58,7 @@ export default function UsersPage() {
   const status = useAppSelector(selectUsersStatus);
   const error = useAppSelector(selectUsersError);
   const uniqueDepartments = useAppSelector(selectUniqueDepartments);
-  
+
   // UI state from Redux
   const selectedDepartment = useAppSelector(selectSelectedDepartment);
   const validatedImagesRange = useAppSelector(selectValidatedImagesRange);
@@ -57,10 +70,13 @@ export default function UsersPage() {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Calculate max validated images for range slider
-  const maxValidatedImages = Math.max(...users.map(u => u.validatedImages), 100);
+  const maxValidatedImages = Math.max(
+    ...users.map((u) => u.validatedImages),
+    100
+  );
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchUsers());
     }
   }, [status, dispatch]);
@@ -68,27 +84,30 @@ export default function UsersPage() {
   useEffect(() => {
     if (error) {
       toast({
-        title: 'Error',
+        title: "Error",
         description: error,
-        variant: 'destructive',
+        variant: "destructive",
       });
     }
   }, [error]);
 
-  const filteredUsers = users.filter(user => {
+  const filteredUsers = users.filter((user) => {
     // Search query filter
-    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    const matchesSearch =
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.empid.toLowerCase().includes(searchQuery.toLowerCase());
-    
+
     // Department filter
-    const matchesDepartment = !selectedDepartment || user.department === selectedDepartment;
-    
+    const matchesDepartment =
+      !selectedDepartment || user.department === selectedDepartment;
+
     // Validated Images range filter
-    const matchesRange = user.validatedImages >= validatedImagesRange[0] && 
-                        user.validatedImages <= validatedImagesRange[1];
-    
+    const matchesRange =
+      user.validatedImages >= validatedImagesRange[0] &&
+      user.validatedImages <= validatedImagesRange[1];
+
     return matchesSearch && matchesDepartment && matchesRange;
   });
 
@@ -107,14 +126,14 @@ export default function UsersPage() {
       try {
         await dispatch(deleteUser(userToDelete.id)).unwrap();
         toast({
-          title: 'Success',
+          title: "Success",
           description: `User ${userToDelete.name} deleted successfully`,
         });
       } catch (error) {
         toast({
-          title: 'Error',
-          description: 'Failed to delete user',
-          variant: 'destructive',
+          title: "Error",
+          description: "Failed to delete user",
+          variant: "destructive",
         });
       }
     }
@@ -125,7 +144,7 @@ export default function UsersPage() {
   const resetFilters = () => {
     dispatch(setSelectedDepartment(undefined));
     dispatch(setValidatedImagesRange([0, maxValidatedImages]));
-    dispatch(setSearchQuery(''));
+    dispatch(setSearchQuery(""));
   };
 
   return (
@@ -138,10 +157,14 @@ export default function UsersPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-text-primary">Users Management</h1>
-          <p className="text-text-muted mt-1">Manage employee accounts and permissions</p>
+          <h1 className="text-3xl font-bold text-text-primary">
+            Users Management
+          </h1>
+          <p className="text-text-muted mt-1">
+            Manage employee accounts and permissions
+          </p>
         </div>
-        <Button 
+        <Button
           onClick={() => {
             setSelectedUser(null);
             setIsFormModalOpen(true);
@@ -166,18 +189,24 @@ export default function UsersPage() {
                 className="pl-10 bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50"
               />
             </div>
-            
-            <Select 
-              value={selectedDepartment} 
-              onValueChange={(value) => dispatch(setSelectedDepartment(value === 'all' ? undefined : value))}
+
+            <Select
+              value={selectedDepartment}
+              onValueChange={(value) =>
+                dispatch(
+                  setSelectedDepartment(value === "all" ? undefined : value)
+                )
+              }
             >
               <SelectTrigger className="bg-hover-overlay/30 border-panel-border">
                 <SelectValue placeholder="All Departments" />
               </SelectTrigger>
               <SelectContent className="bg-panel-bg border-panel-border">
                 <SelectItem value="all">All Departments</SelectItem>
-                {uniqueDepartments.map(dept => (
-                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                {uniqueDepartments.map((dept) => (
+                  <SelectItem key={dept} value={dept}>
+                    {dept}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -191,7 +220,9 @@ export default function UsersPage() {
               </div>
               <Slider
                 value={validatedImagesRange}
-                onValueChange={(value) => dispatch(setValidatedImagesRange(value as [number, number]))}
+                onValueChange={(value) =>
+                  dispatch(setValidatedImagesRange(value as [number, number]))
+                }
                 max={maxValidatedImages}
                 min={0}
                 step={1}
@@ -199,8 +230,8 @@ export default function UsersPage() {
               />
             </div>
 
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={resetFilters}
               className="btn-secondary"
             >
@@ -219,10 +250,13 @@ export default function UsersPage() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {status === 'loading' ? (
+          {status === "loading" ? (
             <div className="space-y-3">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="h-16 bg-hover-overlay/30 rounded-lg animate-pulse shimmer" />
+                <div
+                  key={i}
+                  className="h-16 bg-hover-overlay/30 rounded-lg animate-pulse shimmer"
+                />
               ))}
             </div>
           ) : (
@@ -231,11 +265,19 @@ export default function UsersPage() {
                 <TableHeader>
                   <TableRow className="hover:bg-transparent border-panel-border">
                     <TableHead className="text-text-muted">Name</TableHead>
-                    <TableHead className="text-text-muted">Employee ID</TableHead>
-                    <TableHead className="text-text-muted">Department</TableHead>
+                    <TableHead className="text-text-muted">
+                      Employee ID
+                    </TableHead>
+                    <TableHead className="text-text-muted">
+                      Department
+                    </TableHead>
                     <TableHead className="text-text-muted">Email</TableHead>
-                    <TableHead className="text-text-muted text-center">Validated Images</TableHead>
-                    <TableHead className="text-text-muted text-right">Actions</TableHead>
+                    <TableHead className="text-text-muted text-center">
+                      Validated Images
+                    </TableHead>
+                    <TableHead className="text-text-muted text-right">
+                      Actions
+                    </TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -248,7 +290,9 @@ export default function UsersPage() {
                       className="hover:bg-hover-overlay/50 border-panel-border transition-colors"
                     >
                       <TableCell>
-                        <div className="font-medium text-text-primary">{user.name}</div>
+                        <div className="font-medium text-text-primary">
+                          {user.name}
+                        </div>
                       </TableCell>
                       <TableCell>
                         <code className="text-sm bg-hover-overlay/50 px-2 py-1 rounded text-adani-primary">
@@ -256,11 +300,16 @@ export default function UsersPage() {
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="text-xs bg-panel-bg/50 border-panel-border text-text-secondary">
+                        <Badge
+                          variant="outline"
+                          className="text-xs bg-panel-bg/50 border-panel-border text-text-secondary"
+                        >
                           {user.department}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-text-secondary">{user.email}</TableCell>
+                      <TableCell className="text-text-secondary">
+                        {user.email}
+                      </TableCell>
                       <TableCell className="text-center">
                         <span className="font-semibold text-adani-primary">
                           {user.validatedImages}
@@ -291,9 +340,11 @@ export default function UsersPage() {
                 </TableBody>
               </Table>
 
-              {filteredUsers.length === 0 && status === 'succeeded' && (
+              {filteredUsers.length === 0 && status === "succeeded" && (
                 <div className="text-center py-12">
-                  <p className="text-text-muted">No users found matching your search.</p>
+                  <p className="text-text-muted">
+                    No users found matching your search.
+                  </p>
                 </div>
               )}
             </div>
@@ -312,19 +363,25 @@ export default function UsersPage() {
       />
 
       {/* Delete Confirmation Dialog */}
-      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+      <AlertDialog
+        open={isDeleteDialogOpen}
+        onOpenChange={setIsDeleteDialogOpen}
+      >
         <AlertDialogContent className="bg-panel-bg border-panel-border">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-text-primary">
               Delete User
             </AlertDialogTitle>
             <AlertDialogDescription className="text-text-secondary">
-              Are you sure you want to delete {userToDelete?.name}? This action cannot be undone.
+              Are you sure you want to delete {userToDelete?.name}? This action
+              cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel className="btn-secondary">Cancel</AlertDialogCancel>
-            <AlertDialogAction 
+            <AlertDialogCancel className="btn-secondary">
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
               onClick={confirmDeleteUser}
               className="bg-red-600 hover:bg-red-700 text-white"
             >

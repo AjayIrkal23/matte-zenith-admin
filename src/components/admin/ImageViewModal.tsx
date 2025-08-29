@@ -1,11 +1,18 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X, ChevronLeft, ChevronRight, FileImage, Calendar, Folder } from 'lucide-react';
-import { Dialog, DialogContent, DialogOverlay } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
-import { IImage } from '@/types/admin';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  X,
+  ChevronLeft,
+  ChevronRight,
+  FileImage,
+  Calendar,
+  Folder,
+} from "lucide-react";
+import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { IImage } from "@/types/admin";
 
 interface ImageViewModalProps {
   isOpen: boolean;
@@ -15,12 +22,12 @@ interface ImageViewModalProps {
   onNavigate: (index: number) => void;
 }
 
-export function ImageViewModal({ 
-  isOpen, 
-  onClose, 
-  images, 
-  currentIndex, 
-  onNavigate 
+export function ImageViewModal({
+  isOpen,
+  onClose,
+  images,
+  currentIndex,
+  onNavigate,
 }: ImageViewModalProps) {
   const currentImage = images[currentIndex];
 
@@ -37,34 +44,39 @@ export function ImageViewModal({
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isOpen) return;
-      
+
       switch (event.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           event.preventDefault();
           handlePrevious();
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           event.preventDefault();
           handleNext();
           break;
-        case 'Escape':
+        case "Escape":
           event.preventDefault();
           onClose();
           break;
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [isOpen, currentIndex]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Critical': return 'bg-red-500/20 text-red-300 border-red-500/30';
-      case 'High': return 'bg-orange-500/20 text-orange-300 border-orange-500/30';
-      case 'Medium': return 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30';
-      case 'Low': return 'bg-blue-500/20 text-blue-300 border-blue-500/30';
-      default: return 'bg-gray-500/20 text-gray-300 border-gray-500/30';
+      case "Critical":
+        return "bg-red-500/20 text-red-300 border-red-500/30";
+      case "High":
+        return "bg-orange-500/20 text-orange-300 border-orange-500/30";
+      case "Medium":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+      case "Low":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
     }
   };
 
@@ -85,14 +97,16 @@ export function ImageViewModal({
             <div className="flex items-center gap-3">
               <FileImage className="w-5 h-5 text-adani-primary" />
               <div>
-                <h2 className="font-semibold text-text-primary">{currentImage.name}</h2>
+                <h2 className="font-semibold text-text-primary">
+                  {currentImage.name}
+                </h2>
                 <p className="text-sm text-text-muted">
                   {currentIndex + 1} of {images.length}
                 </p>
               </div>
             </div>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               onClick={onClose}
               className="text-text-muted hover:text-text-primary focus-ring"
@@ -110,7 +124,7 @@ export function ImageViewModal({
                   key={currentImage.id}
                   src={currentImage.imageURL}
                   alt={currentImage.name}
-                  className="max-w-full max-h-full object-contain rounded-lg shadow-lg"
+                  className=" object-cover rounded-lg shadow-lg"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
@@ -153,7 +167,7 @@ export function ImageViewModal({
                   <code className="text-xs bg-hover-overlay/50 px-2 py-1 rounded block text-adani-primary font-mono">
                     {currentImage.imagePath}
                   </code>
-                  
+
                   {currentImage.uploadedAt && (
                     <>
                       <div className="flex items-center gap-2 text-sm">
@@ -161,13 +175,16 @@ export function ImageViewModal({
                         <span className="text-text-muted">Uploaded:</span>
                       </div>
                       <p className="text-sm text-text-secondary">
-                        {new Date(currentImage.uploadedAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'long',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
+                        {new Date(currentImage.uploadedAt).toLocaleDateString(
+                          "en-US",
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          }
+                        )}
                       </p>
                     </>
                   )}
@@ -192,7 +209,7 @@ export function ImageViewModal({
                   <h3 className="font-medium text-text-primary mb-4">
                     Violations ({currentImage.violations.length})
                   </h3>
-                  
+
                   {currentImage.violations.length > 0 ? (
                     <div className="space-y-3">
                       {currentImage.violations.map((violation, index) => (
@@ -207,7 +224,11 @@ export function ImageViewModal({
                             <h4 className="font-medium text-text-primary text-sm">
                               {violation.name}
                             </h4>
-                            <Badge className={`text-xs ${getSeverityColor(violation.severity)}`}>
+                            <Badge
+                              className={`text-xs ${getSeverityColor(
+                                violation.severity
+                              )}`}
+                            >
                               {violation.severity}
                             </Badge>
                           </div>
@@ -222,8 +243,12 @@ export function ImageViewModal({
                       <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                         <FileImage className="w-8 h-8 text-green-400" />
                       </div>
-                      <p className="text-sm text-text-muted">No violations detected</p>
-                      <p className="text-xs text-text-muted mt-1">This image appears to be compliant</p>
+                      <p className="text-sm text-text-muted">
+                        No violations detected
+                      </p>
+                      <p className="text-xs text-text-muted mt-1">
+                        This image appears to be compliant
+                      </p>
                     </div>
                   )}
                 </CardContent>
