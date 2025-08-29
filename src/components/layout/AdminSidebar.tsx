@@ -51,7 +51,7 @@ export function AdminSidebar() {
   return (
     <TooltipProvider>
       <Sidebar className={`border-r border-panel-border bg-panel-bg transition-all duration-300 ${
-        open ? 'w-72' : 'w-18'
+        open ? 'w-[10vw] min-w-[200px]' : 'w-18'
       }`}>
         <SidebarHeader className="p-4 border-b border-panel-border">
           <motion.div 
