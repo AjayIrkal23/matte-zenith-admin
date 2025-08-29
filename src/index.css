@@ -153,8 +153,7 @@
   
   /* Smooth focus rings */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2;
-    focus:ring-offset-color: hsl(var(--app-background));
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background;
   }
   
   /* Loading shimmer */
