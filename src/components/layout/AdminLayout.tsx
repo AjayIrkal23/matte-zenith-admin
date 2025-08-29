@@ -11,18 +11,18 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen bg-app-bg text-text-primary">
       <SidebarProvider defaultOpen={!sidebarCollapsed}>
-        <div className="flex min-h-screen w-full">
+        <div className="flex min-h-screen w-full overflow-hidden">
           <AdminSidebar />
           
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
             <AdminTopbar onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
             
-            <main className="flex-1 overflow-auto">
+            <main className="flex-1 overflow-auto bg-app-bg">
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="w-full max-w-none p-6 space-y-6"
+                className="h-full p-6 space-y-6"
               >
                 {children}
               </motion.div>

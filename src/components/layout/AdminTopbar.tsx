@@ -18,7 +18,7 @@ interface AdminTopbarProps {
 
 export function AdminTopbar({ onToggleSidebar }: AdminTopbarProps) {
   return (
-    <header className="h-16 border-b border-panel-border bg-panel-bg/80 backdrop-blur-md glass-panel">
+    <header className="h-16 border-b border-panel-border bg-panel-bg/80 backdrop-blur-md glass-panel flex-shrink-0">
       <div className="flex items-center justify-between h-full px-4">
         <div className="flex items-center gap-4">
           <SidebarTrigger className="text-text-secondary hover:text-text-primary transition-colors" />

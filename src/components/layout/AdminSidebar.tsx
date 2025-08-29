@@ -50,7 +50,7 @@ export function AdminSidebar() {
 
   return (
     <TooltipProvider>
-      <Sidebar className={`border-r border-panel-border bg-panel-bg transition-all duration-300 ${
+      <Sidebar className={`border-r border-panel-border bg-panel-bg transition-all duration-300 flex-shrink-0 ${
         open ? 'w-[12vw] min-w-[220px]' : 'w-18'
       }`}>
         <SidebarHeader className="p-4 border-b border-panel-border">
