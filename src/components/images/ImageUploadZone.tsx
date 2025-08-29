@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { motion } from 'framer-motion';
 import { Upload, FileArchive, AlertCircle } from 'lucide-react';
@@ -9,8 +9,6 @@ interface ImageUploadZoneProps {
 }
 
 export function ImageUploadZone({ onZipUpload, isUploading = false }: ImageUploadZoneProps) {
-  const [dragActive, setDragActive] = useState(false);
-
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const zipFile = acceptedFiles.find(file => file.type === 'application/zip' || file.name.endsWith('.zip'));
     if (zipFile) {
@@ -26,24 +24,22 @@ export function ImageUploadZone({ onZipUpload, isUploading = false }: ImageUploa
     maxFiles: 1,
     disabled: isUploading,
   });
+  const rootProps = getRootProps({
+    className: `
+      relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200
+      ${isDragActive
+        ? 'border-adani-primary bg-adani-primary/10'
+        : 'border-panel-border hover:border-adani-primary/50 hover:bg-hover-overlay/30'
+      }
+      ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
+    `,
+  });
 
   return (
     <motion.div
-      className={`
-        relative border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all duration-200
-        ${isDragActive 
-          ? 'border-adani-primary bg-adani-primary/10' 
-          : 'border-panel-border hover:border-adani-primary/50 hover:bg-hover-overlay/30'
-        }
-        ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}
-      `}
+      {...rootProps}
       whileHover={!isUploading ? { scale: 1.01 } : {}}
       whileTap={!isUploading ? { scale: 0.99 } : {}}
-      onClick={getRootProps().onClick}
-      onKeyDown={getRootProps().onKeyDown}
-      tabIndex={getRootProps().tabIndex}
-      role={getRootProps().role}
-      style={getRootProps().style}
     >
       <input {...getInputProps()} />
       

@@ -49,7 +49,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/hooks/use-toast";
-import { UserFormModal } from "@/components/admin/UserFormModal";
+import { UserFormModal } from "@/components/users/UserFormModal";
 import { IUser } from "@/types/admin";
 
 export default function UsersPage() {

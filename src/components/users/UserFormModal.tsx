@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -39,6 +39,9 @@ const departments = [
   'Administration',
 ];
 
+const inputClass = 'bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20';
+const selectTriggerClass = 'bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50';
+
 export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const dispatch = useAppDispatch();
   const isEditing = !!user;
@@ -46,9 +49,9 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<UserFormData>();
 
@@ -56,17 +59,19 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
 
   useEffect(() => {
     if (user) {
-      setValue('name', user.name);
-      setValue('email', user.email);
-      setValue('empid', user.empid);
-      setValue('department', user.department);
-      setValue('validatedImages', user.validatedImages);
+      reset({
+        name: user.name,
+        email: user.email,
+        empid: user.empid,
+        department: user.department,
+        validatedImages: user.validatedImages,
+      });
     } else {
       reset();
     }
-  }, [user, setValue, reset]);
+  }, [user, reset]);
 
-  const onSubmit = async (data: UserFormData) => {
+  const onSubmit = useCallback(async (data: UserFormData) => {
     try {
       if (isEditing && user) {
         await dispatch(editUser({ id: user.id, userData: data })).unwrap();
@@ -89,7 +94,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
         variant: 'destructive',
       });
     }
-  };
+  }, [isEditing, user, dispatch, onClose]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -123,7 +128,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                 <Input
                   id="name"
                   {...register('name', { required: 'Name is required' })}
-                  className="bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20"
+                  className={inputClass}
                   placeholder="Enter full name"
                 />
                 {errors.name && (
@@ -138,7 +143,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                 <Input
                   id="empid"
                   {...register('empid', { required: 'Employee ID is required' })}
-                  className="bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20"
+                  className={inputClass}
                   placeholder="EMP001"
                 />
                 {errors.empid && (
@@ -161,7 +166,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                     message: 'Invalid email address'
                   }
                 })}
-                className="bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20"
+                className={inputClass}
                 placeholder="user@adani.com"
               />
               {errors.email && (
@@ -178,7 +183,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                   value={watchedDepartment}
                   onValueChange={(value) => setValue('department', value)}
                 >
-                  <SelectTrigger className="bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50">
+                  <SelectTrigger className={selectTriggerClass}>
                     <SelectValue placeholder="Select department" />
                   </SelectTrigger>
                   <SelectContent className="bg-panel-bg border-panel-border">
@@ -207,7 +212,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                     valueAsNumber: true,
                     min: { value: 0, message: 'Must be a positive number' }
                   })}
-                  className="bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20"
+                  className={inputClass}
                   placeholder="0"
                 />
                 {errors.validatedImages && (

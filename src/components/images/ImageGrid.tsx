@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { Eye, Plus, AlertTriangle, Calendar, HardDrive } from 'lucide-react';
+import { Eye, AlertTriangle, Calendar, HardDrive } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,7 +11,13 @@ import {
   PaginationNext,
   PaginationPrevious,
 } from '@/components/ui/pagination';
-import { IImage, PaginatedResponse } from '@/types/admin';
+import { IImage } from '@/types/admin';
+import {
+  getSeverityStatusStyle,
+  formatFileSize,
+  formatDate,
+  getPaginationRange,
+} from './utils';
 
 interface ImageGridProps {
   images: IImage[];
@@ -21,33 +27,7 @@ interface ImageGridProps {
 }
 
 export function ImageGrid({ images, pagination, onPageChange, onViewImage }: ImageGridProps) {
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'Critical': return 'status-critical';
-      case 'High': return 'status-high';
-      case 'Medium': return 'status-medium';
-      case 'Low': return 'status-low';
-      default: return 'bg-gray-500/20 text-gray-300';
-    }
-  };
-
-  const formatFileSize = (bytes: number = 0) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Unknown';
-    return new Date(dateString).toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const pages = getPaginationRange({ page: pagination.page, totalPages: pagination.totalPages });
 
   return (
     <div className="space-y-6">
@@ -126,7 +106,7 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                             {image.violations.slice(0, 2).map((violation, idx) => (
                               <Badge
                                 key={idx}
-                                className={`text-xs px-2 py-1 ${getSeverityColor(violation.severity)}`}
+                                className={`text-xs px-2 py-1 ${getSeverityStatusStyle(violation.severity)}`}
                               >
                                 {violation.name}
                               </Badge>
@@ -172,37 +152,24 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                     />
                   </PaginationItem>
 
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-                    let pageNum = i + 1;
-                    if (pagination.totalPages > 5) {
-                      if (pagination.page <= 3) {
-                        pageNum = i + 1;
-                      } else if (pagination.page >= pagination.totalPages - 2) {
-                        pageNum = pagination.totalPages - 4 + i;
-                      } else {
-                        pageNum = pagination.page - 2 + i;
-                      }
-                    }
-
-                    return (
-                      <PaginationItem key={pageNum}>
-                        <PaginationLink
-                          href="#"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onPageChange(pageNum);
-                          }}
-                          className={`${
-                            pageNum === pagination.page
-                              ? 'bg-adani-primary text-white'
-                              : 'hover:bg-hover-overlay text-text-primary'
-                          }`}
-                        >
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
+                  {pages.map((pageNum) => (
+                    <PaginationItem key={pageNum}>
+                      <PaginationLink
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          onPageChange(pageNum);
+                        }}
+                        className={`${
+                          pageNum === pagination.page
+                            ? 'bg-adani-primary text-white'
+                            : 'hover:bg-hover-overlay text-text-primary'
+                        }`}
+                      >
+                        {pageNum}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
 
                   <PaginationItem>
                     <PaginationNext

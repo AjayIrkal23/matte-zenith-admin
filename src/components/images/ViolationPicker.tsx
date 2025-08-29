@@ -10,6 +10,8 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { IViolation } from '@/types/admin';
+import { getSeverityStatusStyle } from './utils';
+import type { ElementType } from 'react';
 
 interface ViolationPickerProps {
   isOpen: boolean;
@@ -41,26 +43,14 @@ const availableViolations: IViolation[] = [
   }
 ];
 
-export function ViolationPicker({ isOpen, onClose, onViolationSelected, imageName }: ViolationPickerProps) {
-  const getSeverityIcon = (severity: string) => {
-    switch (severity) {
-      case 'Critical': return AlertTriangle;
-      case 'High': return Shield;
-      case 'Medium': return AlertCircle;
-      case 'Low': return Info;
-      default: return Info;
-    }
-  };
+const severityIconMap: Record<string, ElementType> = {
+  Critical: AlertTriangle,
+  High: Shield,
+  Medium: AlertCircle,
+  Low: Info,
+};
 
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'Critical': return 'status-critical';
-      case 'High': return 'status-high';
-      case 'Medium': return 'status-medium';
-      case 'Low': return 'status-low';
-      default: return 'bg-gray-500/20 text-gray-300';
-    }
-  };
+export function ViolationPicker({ isOpen, onClose, onViolationSelected, imageName }: ViolationPickerProps) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -83,7 +73,7 @@ export function ViolationPicker({ isOpen, onClose, onViolationSelected, imageNam
             className="grid gap-3 py-4"
           >
             {availableViolations.map((violation, index) => {
-              const IconComponent = getSeverityIcon(violation.severity);
+              const IconComponent = severityIconMap[violation.severity] || Info;
               
               return (
                 <motion.div
@@ -98,7 +88,7 @@ export function ViolationPicker({ isOpen, onClose, onViolationSelected, imageNam
                     onClick={() => onViolationSelected(violation)}
                   >
                     <div className="flex items-start gap-4 w-full">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getSeverityColor(violation.severity)}`}>
+                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getSeverityStatusStyle(violation.severity)}`}>
                         <IconComponent className="w-5 h-5" />
                       </div>
                       
@@ -107,7 +97,7 @@ export function ViolationPicker({ isOpen, onClose, onViolationSelected, imageNam
                           <h4 className="font-semibold text-text-primary">
                             {violation.name}
                           </h4>
-                          <Badge className={`${getSeverityColor(violation.severity)} text-xs`}>
+                          <Badge className={`${getSeverityStatusStyle(violation.severity)} text-xs`}>
                             {violation.severity}
                           </Badge>
                         </div>
