@@ -1,11 +1,10 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { Upload, Image as ImageIcon, AlertTriangle, Filter, Eye, Plus } from 'lucide-react';
+import { Upload, Image as ImageIcon, AlertTriangle, Filter, Eye, Calendar, AlertCircle } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { 
   fetchImages, 
   uploadZip, 
-  assignViolation,
   setPage,
   selectImages, 
   selectImagesStatus, 
@@ -17,11 +16,16 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
+import { cn } from '@/lib/utils';
+import { format } from 'date-fns';
 import { toast } from '@/hooks/use-toast';
 import { ImageUploadZone } from '@/components/admin/ImageUploadZone';
 import { ImageGrid } from '@/components/admin/ImageGrid';
-import { ViolationPicker } from '@/components/admin/ViolationPicker';
-import { IImage, IViolation } from '@/types/admin';
+import { ImageViewModal } from '@/components/admin/ImageViewModal';
+import { IImage } from '@/types/admin';
 
 export default function ImagesPage() {
   const dispatch = useAppDispatch();
@@ -31,8 +35,13 @@ export default function ImagesPage() {
   const pagination = useAppSelector(selectImagesPagination);
   const uploadProgress = useAppSelector(selectUploadProgress);
 
-  const [selectedImage, setSelectedImage] = useState<IImage | null>(null);
-  const [isViolationPickerOpen, setIsViolationPickerOpen] = useState(false);
+  // Filters state
+  const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
+  const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
+  
+  // Modal state  
+  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -49,6 +58,26 @@ export default function ImagesPage() {
       });
     }
   }, [error]);
+
+  // Filter images based on selected criteria
+  const filteredImages = images.filter(image => {
+    // Severity filter
+    if (selectedSeverities.length > 0) {
+      const hasMatchingSeverity = image.violations.some(v => 
+        selectedSeverities.includes(v.severity)
+      );
+      if (!hasMatchingSeverity) return false;
+    }
+
+    // Date range filter
+    if (dateRange.from || dateRange.to) {
+      const imageDate = new Date(image.uploadedAt);
+      if (dateRange.from && imageDate < dateRange.from) return false;
+      if (dateRange.to && imageDate > dateRange.to) return false;
+    }
+
+    return true;
+  });
 
   const handleZipUpload = useCallback(async (file: File) => {
     try {
@@ -73,32 +102,21 @@ export default function ImagesPage() {
     dispatch(fetchImages({ page, pageSize: pagination.pageSize }));
   };
 
-  const handleAssignViolation = (image: IImage) => {
-    setSelectedImage(image);
-    setIsViolationPickerOpen(true);
+  const handleViewImage = (image: IImage) => {
+    const imageIndex = filteredImages.findIndex(img => img.id === image.id);
+    setCurrentImageIndex(imageIndex);
+    setIsViewModalOpen(true);
   };
 
-  const handleViolationSelected = async (violation: IViolation) => {
-    if (selectedImage) {
-      try {
-        await dispatch(assignViolation({ 
-          imageId: selectedImage.id, 
-          violation 
-        })).unwrap();
-        toast({
-          title: 'Success',
-          description: 'Violation assigned successfully',
-        });
-      } catch (error) {
-        toast({
-          title: 'Error',
-          description: 'Failed to assign violation',
-          variant: 'destructive',
-        });
-      }
-    }
-    setIsViolationPickerOpen(false);
-    setSelectedImage(null);
+  const handleImageNavigation = (index: number) => {
+    setCurrentImageIndex(index);
+  };
+
+  const severityOptions = ['Critical', 'High', 'Medium', 'Low'];
+
+  const resetFilters = () => {
+    setSelectedSeverities([]);
+    setDateRange({});
   };
 
   const getSeverityColor = (severity: string) => {
@@ -171,7 +189,77 @@ export default function ImagesPage() {
         ))}
       </div>
 
-      {/* Upload Zone */}
+      {/* Filters */}
+      <Card className="glass-panel">
+        <CardContent className="p-4">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <Select value={selectedSeverities.join(',')} onValueChange={() => {}}>
+              <SelectTrigger className="bg-hover-overlay/30 border-panel-border">
+                <SelectValue placeholder="Filter by Severity" />
+              </SelectTrigger>
+              <SelectContent className="bg-panel-bg border-panel-border">
+                {severityOptions.map(severity => (
+                  <SelectItem 
+                    key={severity} 
+                    value={severity}
+                    onClick={() => {
+                      setSelectedSeverities(prev => 
+                        prev.includes(severity) 
+                          ? prev.filter(s => s !== severity)
+                          : [...prev, severity]
+                      );
+                    }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`w-2 h-2 rounded-full ${
+                        severity === 'Critical' ? 'bg-red-500' :
+                        severity === 'High' ? 'bg-orange-500' :
+                        severity === 'Medium' ? 'bg-yellow-500' : 'bg-blue-500'
+                      }`} />
+                      {severity}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" className="justify-start text-left font-normal bg-hover-overlay/30 border-panel-border">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  {dateRange.from ? (
+                    dateRange.to ? (
+                      `${format(dateRange.from, 'LLL dd')} - ${format(dateRange.to, 'LLL dd')}`
+                    ) : (
+                      format(dateRange.from, 'LLL dd, y')
+                    )
+                  ) : (
+                    "Pick date range"
+                  )}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-panel-bg border-panel-border" align="start">
+                <CalendarComponent
+                  initialFocus
+                  mode="range"
+                  defaultMonth={dateRange.from}
+                  selected={{ from: dateRange.from, to: dateRange.to }}
+                  onSelect={(range) => setDateRange(range || {})}
+                  numberOfMonths={2}
+                  className="pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={resetFilters} className="btn-secondary">
+                <AlertCircle className="w-4 h-4 mr-2" />
+                Reset
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
       <Card className="glass-panel">
         <CardHeader>
           <CardTitle className="text-text-primary flex items-center gap-2">
@@ -200,15 +288,11 @@ export default function ImagesPage() {
       <Card className="glass-panel">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-text-primary">
-            Images Gallery ({images.length} of {pagination.total})
+            Images Gallery ({filteredImages.length} of {pagination.total})
           </CardTitle>
-          <Button variant="outline" className="btn-secondary">
-            <Filter className="w-4 h-4 mr-2" />
-            Filter
-          </Button>
         </CardHeader>
         <CardContent>
-          {status === 'loading' && images.length === 0 ? (
+          {status === 'loading' && filteredImages.length === 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {[...Array(8)].map((_, i) => (
                 <div key={i} className="aspect-video bg-hover-overlay/30 rounded-lg animate-pulse shimmer" />
@@ -216,24 +300,22 @@ export default function ImagesPage() {
             </div>
           ) : (
             <ImageGrid
-              images={images}
+              images={filteredImages}
               pagination={pagination}
               onPageChange={handlePageChange}
-              onAssignViolation={handleAssignViolation}
+              onViewImage={handleViewImage}
             />
           )}
         </CardContent>
       </Card>
 
-      {/* Violation Picker Modal */}
-      <ViolationPicker
-        isOpen={isViolationPickerOpen}
-        onClose={() => {
-          setIsViolationPickerOpen(false);
-          setSelectedImage(null);
-        }}
-        onViolationSelected={handleViolationSelected}
-        imageName={selectedImage?.name || ''}
+      {/* Image View Modal */}
+      <ImageViewModal
+        isOpen={isViewModalOpen}
+        onClose={() => setIsViewModalOpen(false)}
+        images={filteredImages}
+        currentIndex={currentImageIndex}
+        onNavigate={handleImageNavigation}
       />
     </motion.div>
   );

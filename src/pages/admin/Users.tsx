@@ -1,12 +1,22 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Plus, Edit, Trash2, Search, Filter } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, Filter, RotateCcw } from 'lucide-react';
 import { useAppDispatch, useAppSelector } from '@/store';
-import { fetchUsers, deleteUser, selectUsers, selectUsersStatus, selectUsersError } from '@/store/slices/usersSlice';
+import { fetchUsers, deleteUser, selectUsers, selectUsersStatus, selectUsersError, selectUniqueDepartments } from '@/store/slices/usersSlice';
+import { 
+  setSelectedDepartment, 
+  setValidatedImagesRange, 
+  setSearchQuery,
+  selectSelectedDepartment,
+  selectValidatedImagesRange,
+  selectUsersSearchQuery
+} from '@/store/slices/usersUiSlice';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 import {
   Table,
   TableBody,
@@ -34,12 +44,20 @@ export default function UsersPage() {
   const users = useAppSelector(selectUsers);
   const status = useAppSelector(selectUsersStatus);
   const error = useAppSelector(selectUsersError);
+  const uniqueDepartments = useAppSelector(selectUniqueDepartments);
+  
+  // UI state from Redux
+  const selectedDepartment = useAppSelector(selectSelectedDepartment);
+  const validatedImagesRange = useAppSelector(selectValidatedImagesRange);
+  const searchQuery = useAppSelector(selectUsersSearchQuery);
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
   const [userToDelete, setUserToDelete] = useState<IUser | null>(null);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+
+  // Calculate max validated images for range slider
+  const maxValidatedImages = Math.max(...users.map(u => u.validatedImages), 100);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -57,12 +75,22 @@ export default function UsersPage() {
     }
   }, [error]);
 
-  const filteredUsers = users.filter(user =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.empid.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredUsers = users.filter(user => {
+    // Search query filter
+    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.department.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.empid.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Department filter
+    const matchesDepartment = !selectedDepartment || user.department === selectedDepartment;
+    
+    // Validated Images range filter
+    const matchesRange = user.validatedImages >= validatedImagesRange[0] && 
+                        user.validatedImages <= validatedImagesRange[1];
+    
+    return matchesSearch && matchesDepartment && matchesRange;
+  });
 
   const handleEditUser = (user: IUser) => {
     setSelectedUser(user);
@@ -94,17 +122,10 @@ export default function UsersPage() {
     setUserToDelete(null);
   };
 
-  const getDepartmentBadgeVariant = (department: string) => {
-    switch (department) {
-      case 'Safety Engineering':
-        return 'destructive';
-      case 'Operations':
-        return 'default';
-      case 'Quality Assurance':
-        return 'secondary';
-      default:
-        return 'outline';
-    }
+  const resetFilters = () => {
+    dispatch(setSelectedDepartment(undefined));
+    dispatch(setValidatedImagesRange([0, maxValidatedImages]));
+    dispatch(setSearchQuery(''));
   };
 
   return (
@@ -132,22 +153,59 @@ export default function UsersPage() {
         </Button>
       </div>
 
-      {/* Search and Filters */}
+      {/* Filters */}
       <Card className="glass-panel">
         <CardContent className="p-4">
-          <div className="flex flex-col sm:flex-row gap-4">
-            <div className="relative flex-1">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
               <Input
-                placeholder="Search users by name, email, department, or employee ID..."
+                placeholder="Search users..."
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => dispatch(setSearchQuery(e.target.value))}
                 className="pl-10 bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50"
               />
             </div>
-            <Button variant="outline" className="btn-secondary">
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
+            
+            <Select 
+              value={selectedDepartment} 
+              onValueChange={(value) => dispatch(setSelectedDepartment(value === 'all' ? undefined : value))}
+            >
+              <SelectTrigger className="bg-hover-overlay/30 border-panel-border">
+                <SelectValue placeholder="All Departments" />
+              </SelectTrigger>
+              <SelectContent className="bg-panel-bg border-panel-border">
+                <SelectItem value="all">All Departments</SelectItem>
+                {uniqueDepartments.map(dept => (
+                  <SelectItem key={dept} value={dept}>{dept}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span className="text-text-muted">Validated Images</span>
+                <span className="text-adani-primary">
+                  {validatedImagesRange[0]} - {validatedImagesRange[1]}
+                </span>
+              </div>
+              <Slider
+                value={validatedImagesRange}
+                onValueChange={(value) => dispatch(setValidatedImagesRange(value as [number, number]))}
+                max={maxValidatedImages}
+                min={0}
+                step={1}
+                className="w-full"
+              />
+            </div>
+
+            <Button 
+              variant="outline" 
+              onClick={resetFilters}
+              className="btn-secondary"
+            >
+              <RotateCcw className="w-4 h-4 mr-2" />
+              Reset
             </Button>
           </div>
         </CardContent>
@@ -198,7 +256,7 @@ export default function UsersPage() {
                         </code>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={getDepartmentBadgeVariant(user.department)} className="text-xs">
+                        <Badge variant="outline" className="text-xs bg-panel-bg/50 border-panel-border text-text-secondary">
                           {user.department}
                         </Badge>
                       </TableCell>

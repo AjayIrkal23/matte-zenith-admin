@@ -1,4 +1,5 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createSelector } from '@reduxjs/toolkit';
 import JSZip from 'jszip';
 import { IImage, IViolation, ImagesState, PaginatedResponse } from '@/types/admin';
 import { RootState } from '../index';
@@ -220,16 +221,19 @@ const imagesSlice = createSlice({
   },
 });
 
-// Selectors
+// Selectors with memoization
 export const selectImages = (state: RootState) => state.images.items;
 export const selectImagesStatus = (state: RootState) => state.images.status;
 export const selectImagesError = (state: RootState) => state.images.error;
-export const selectImagesPagination = (state: RootState) => ({
-  page: state.images.page,
-  pageSize: state.images.pageSize,
-  total: state.images.total,
-  totalPages: Math.ceil(state.images.total / state.images.pageSize),
-});
+export const selectImagesPagination = createSelector(
+  [(state: RootState) => state.images],
+  (images) => ({
+    page: images.page,
+    pageSize: images.pageSize,
+    total: images.total,
+    totalPages: Math.ceil(images.total / images.pageSize),
+  })
+);
 export const selectUploadProgress = (state: RootState) => state.images.uploadProgress;
 
 export const { clearError, setPage, setPageSize, resetUploadProgress } = imagesSlice.actions;

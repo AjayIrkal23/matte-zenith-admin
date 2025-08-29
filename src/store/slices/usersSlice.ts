@@ -170,6 +170,12 @@ export const selectUsersByDepartment = createSelector(
   (users, department) => users.filter(user => user.department === department)
 );
 
+// Memoized selector for unique departments
+export const selectUniqueDepartments = createSelector(
+  [selectUsers],
+  (users) => Array.from(new Set(users.map(user => user.department)))
+);
+
 // Memoized selector for total validated images across all users
 export const selectTotalValidatedImages = createSelector(
   [selectUsers],

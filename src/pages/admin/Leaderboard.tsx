@@ -1,6 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Crown, Medal, Award, TrendingUp, Users } from 'lucide-react';
+import { Trophy, Crown, Medal, Award, TrendingUp, Users, Search, Filter, RotateCcw } from 'lucide-react';
+import confetti from 'canvas-confetti';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { 
   recomputeLeaderboard,
@@ -9,9 +10,13 @@ import {
   selectLeaderboardStatus,
   selectLeaderboardError
 } from '@/store/slices/leaderboardSlice';
-import { fetchUsers, selectTotalValidatedImages } from '@/store/slices/usersSlice';
+import { fetchUsers, selectTotalValidatedImages, selectUniqueDepartments } from '@/store/slices/usersSlice';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Table,
@@ -31,11 +36,20 @@ export default function LeaderboardPage() {
   const error = useAppSelector(selectLeaderboardError);
   const totalValidatedImages = useAppSelector(selectTotalValidatedImages);
 
+  // Confetti on first load
+  const [hasShownConfetti, setHasShownConfetti] = useState(false);
+  
+  // Filters state
+  const uniqueDepartments = useAppSelector(selectUniqueDepartments);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState<string | undefined>();
+  const [validatedImagesRange, setValidatedImagesRange] = useState<[number, number]>([0, 100]);
+
+  const maxValidatedImages = Math.max(...allUsers.map(u => u.validatedImages), 100);
+
   useEffect(() => {
     const loadData = async () => {
-      // First ensure users are loaded
       await dispatch(fetchUsers());
-      // Then compute leaderboard
       dispatch(recomputeLeaderboard());
     };
     
@@ -53,6 +67,33 @@ export default function LeaderboardPage() {
       });
     }
   }, [error]);
+
+  // Trigger confetti and congratulations message on first load
+  useEffect(() => {
+    if (!hasShownConfetti && allUsers.length > 0) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      toast({
+        title: '🎉 Congratulations!',
+        description: 'You are in dummy #2 position.',
+        duration: 5000,
+      });
+      setHasShownConfetti(true);
+    }
+  }, [allUsers.length, hasShownConfetti]);
+
+  // Filter users based on criteria
+  const filteredUsers = allUsers.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.empid.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDepartment = !selectedDepartment || user.department === selectedDepartment;
+    const matchesRange = user.validatedImages >= validatedImagesRange[0] && 
+                        user.validatedImages <= validatedImagesRange[1];
+    return matchesSearch && matchesDepartment && matchesRange;
+  });
 
   const getRankIcon = (rank: number) => {
     switch (rank) {

@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import usersReducer from './slices/usersSlice';
+import usersUiReducer from './slices/usersUiSlice';
 import imagesReducer from './slices/imagesSlice';
 import leaderboardReducer from './slices/leaderboardSlice';
 import authReducer from './slices/authSlice';
@@ -9,6 +10,7 @@ export const store = configureStore({
   reducer: {
     auth: authReducer,
     users: usersReducer,
+    usersUi: usersUiReducer,
     images: imagesReducer,
     leaderboard: leaderboardReducer,
   },

@@ -1,8 +1,7 @@
-import { Search, Bell, Settings, User, LogOut } from 'lucide-react';
+import { Settings, User, LogOut, Building2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +11,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 
 interface AdminTopbarProps {
   onToggleSidebar: () => void;
@@ -26,44 +24,26 @@ export function AdminTopbar({ onToggleSidebar }: AdminTopbarProps) {
           <SidebarTrigger className="text-text-secondary hover:text-text-primary transition-colors" />
           
           <motion.div 
-            className="relative flex-1 max-w-md"
+            className="flex items-center gap-3"
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
-            <Input
-              placeholder="Search users, images..."
-              className="pl-10 bg-hover-overlay/50 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20"
-            />
+            <div className="w-8 h-8 bg-adani-primary rounded-lg flex items-center justify-center">
+              <Building2 className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h2 className="font-semibold text-text-primary text-sm">Adani Group</h2>
+              <p className="text-xs text-text-muted">Safety Monitoring</p>
+            </div>
           </motion.div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: 0.2 }}
-          >
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="relative text-text-secondary hover:text-text-primary hover:bg-hover-overlay"
-            >
-              <Bell className="w-4 h-4" />
-              <Badge 
-                variant="destructive" 
-                className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center p-0 text-xs"
-              >
-                3
-              </Badge>
-            </Button>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.3 }}
           >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

@@ -15,17 +15,12 @@ import { IImage, PaginatedResponse } from '@/types/admin';
 
 interface ImageGridProps {
   images: IImage[];
-  pagination: {
-    page: number;
-    pageSize: number;
-    total: number;
-    totalPages: number;
-  };
+  pagination: { page: number; pageSize: number; total: number; totalPages: number };
   onPageChange: (page: number) => void;
-  onAssignViolation: (image: IImage) => void;
+  onViewImage: (image: IImage) => void;
 }
 
-export function ImageGrid({ images, pagination, onPageChange, onAssignViolation }: ImageGridProps) {
+export function ImageGrid({ images, pagination, onPageChange, onViewImage }: ImageGridProps) {
   const getSeverityColor = (severity: string) => {
     switch (severity) {
       case 'Critical': return 'status-critical';
@@ -86,15 +81,13 @@ export function ImageGrid({ images, pagination, onPageChange, onAssignViolation 
                     
                     {/* Overlay with quick actions */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-                      <Button size="sm" variant="secondary" className="bg-white/20 backdrop-blur-sm hover:bg-white/30">
-                        <Eye className="w-4 h-4" />
-                      </Button>
                       <Button 
                         size="sm" 
-                        className="bg-adani-primary/80 hover:bg-adani-primary text-white"
-                        onClick={() => onAssignViolation(image)}
+                        variant="secondary" 
+                        className="bg-white/20 backdrop-blur-sm hover:bg-white/30"
+                        onClick={() => onViewImage(image)}
                       >
-                        <Plus className="w-4 h-4" />
+                        <Eye className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
@@ -128,15 +121,6 @@ export function ImageGrid({ images, pagination, onPageChange, onAssignViolation 
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
                             <span className="text-xs font-medium text-text-muted">Violations ({image.violations.length})</span>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              className="h-6 px-2 text-xs text-adani-primary hover:text-adani-primary hover:bg-adani-primary/10"
-                              onClick={() => onAssignViolation(image)}
-                            >
-                              <Plus className="w-3 h-3 mr-1" />
-                              Add
-                            </Button>
                           </div>
                           <div className="space-y-1">
                             {image.violations.slice(0, 2).map((violation, idx) => (
@@ -157,15 +141,6 @@ export function ImageGrid({ images, pagination, onPageChange, onAssignViolation 
                       ) : (
                         <div className="text-center py-2">
                           <span className="text-xs text-text-muted">No violations detected</span>
-                          <Button 
-                            size="sm" 
-                            variant="ghost" 
-                            className="ml-2 h-6 px-2 text-xs text-adani-primary hover:text-adani-primary hover:bg-adani-primary/10"
-                            onClick={() => onAssignViolation(image)}
-                          >
-                            <Plus className="w-3 h-3 mr-1" />
-                            Add Violation
-                          </Button>
                         </div>
                       )}
                     </div>
