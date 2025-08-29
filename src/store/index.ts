@@ -3,9 +3,11 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux';
 import usersReducer from './slices/usersSlice';
 import imagesReducer from './slices/imagesSlice';
 import leaderboardReducer from './slices/leaderboardSlice';
+import authReducer from './slices/authSlice';
 
 export const store = configureStore({
   reducer: {
+    auth: authReducer,
     users: usersReducer,
     images: imagesReducer,
     leaderboard: leaderboardReducer,

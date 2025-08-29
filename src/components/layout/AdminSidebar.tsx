@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Users, Images, Trophy, Building2 } from 'lucide-react';
+import { Users, Images, Trophy, Building2, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import {
   Sidebar,
@@ -15,6 +15,12 @@ import {
 } from '@/components/ui/sidebar';
 
 const navigationItems = [
+  {
+    title: 'Dashboard',
+    href: '/admin/dashboard',
+    icon: BarChart3,
+    description: 'Overview & KPIs',
+  },
   {
     title: 'Users',
     href: '/admin/users',
