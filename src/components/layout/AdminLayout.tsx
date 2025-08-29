@@ -14,7 +14,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         <div className="flex min-h-screen w-full">
           <AdminSidebar />
           
-          <div className="flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col min-w-0">
             <AdminTopbar onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)} />
             
             <main className="flex-1 overflow-auto">
@@ -22,7 +22,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, ease: "easeOut" }}
-                className="container mx-auto p-6"
+                className="w-full max-w-none p-6 space-y-6"
               >
                 {children}
               </motion.div>

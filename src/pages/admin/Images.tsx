@@ -157,14 +157,14 @@ export default function ImagesPage() {
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="glass-panel">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-adani-primary/20 rounded-lg flex items-center justify-center">
+              <div className="w-10 h-10 bg-adani-primary/20 rounded-lg flex items-center justify-center flex-shrink-0">
                 <ImageIcon className="w-5 h-5 text-adani-primary" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <p className="text-sm text-text-muted">Total Images</p>
                 <p className="text-2xl font-bold text-text-primary">{pagination.total}</p>
               </div>
@@ -176,10 +176,10 @@ export default function ImagesPage() {
           <Card key={severity} className="glass-panel">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${getSeverityColor(severity)}`}>
+                <div className={`w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 ${getSeverityColor(severity)}`}>
                   <AlertTriangle className="w-5 h-5" />
                 </div>
-                <div>
+                <div className="min-w-0">
                   <p className="text-sm text-text-muted">{severity}</p>
                   <p className="text-2xl font-bold text-text-primary">{count}</p>
                 </div>
@@ -192,7 +192,7 @@ export default function ImagesPage() {
       {/* Filters */}
       <Card className="glass-panel">
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <Select value={selectedSeverities.join(',')} onValueChange={() => {}}>
               <SelectTrigger className="bg-hover-overlay/30 border-panel-border">
                 <SelectValue placeholder="Filter by Severity" />
@@ -225,17 +225,19 @@ export default function ImagesPage() {
 
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline" className="justify-start text-left font-normal bg-hover-overlay/30 border-panel-border">
-                  <Calendar className="mr-2 h-4 w-4" />
-                  {dateRange.from ? (
-                    dateRange.to ? (
-                      `${format(dateRange.from, 'LLL dd')} - ${format(dateRange.to, 'LLL dd')}`
+                <Button variant="outline" className="justify-start text-left font-normal bg-hover-overlay/30 border-panel-border w-full">
+                  <Calendar className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">
+                    {dateRange.from ? (
+                      dateRange.to ? (
+                        `${format(dateRange.from, 'MMM dd')} - ${format(dateRange.to, 'MMM dd')}`
+                      ) : (
+                        format(dateRange.from, 'MMM dd, y')
+                      )
                     ) : (
-                      format(dateRange.from, 'LLL dd, y')
-                    )
-                  ) : (
-                    "Pick date range"
-                  )}
+                      "Pick date range"
+                    )}
+                  </span>
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0 bg-panel-bg border-panel-border" align="start">
@@ -251,10 +253,10 @@ export default function ImagesPage() {
               </PopoverContent>
             </Popover>
 
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={resetFilters} className="btn-secondary">
+            <div className="lg:col-span-2 flex gap-2">
+              <Button variant="outline" onClick={resetFilters} className="btn-secondary flex-1 sm:flex-none">
                 <AlertCircle className="w-4 h-4 mr-2" />
-                Reset
+                Reset Filters
               </Button>
             </div>
           </div>
