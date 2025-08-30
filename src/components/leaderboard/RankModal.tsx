@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Crown, Medal, Award, Trophy } from "lucide-react";
+import { Crown, Medal, Award, Trophy, TrendingUp } from "lucide-react";
 import { getRankIcon, getRankColorClass } from "./utils";
 
 interface RankModalProps {
@@ -55,8 +55,8 @@ export default function RankModal({ isOpen, onClose, userRank, userName, totalUs
         };
       default:
         return {
-          title: "Keep Going!",
-          message: `You're doing well ${userName}! Keep it up!`,
+          title: "🌟 You're Doing Great!",
+          message: `Keep validating and climb the ladder, ${userName}! 🚀`,
           subtitle: `You're ranked #${userRank} out of ${totalUsers} users.`
         };
     }
@@ -107,6 +107,10 @@ export default function RankModal({ isOpen, onClose, userRank, userName, totalUs
             <p className="text-lg text-text-secondary">
               {message}
             </p>
+
+            {!isTopThree && (
+              <TrendingUp className="w-8 h-8 mx-auto text-adani-primary" />
+            )}
             
             <p className="text-text-muted">
               {subtitle}

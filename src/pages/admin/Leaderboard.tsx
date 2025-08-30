@@ -79,7 +79,7 @@ export default function LeaderboardPage() {
       <RankModal
         isOpen={showRankModal}
         onClose={() => setShowRankModal(false)}
-        userRank={userRank || 1}
+        userRank={userRank ?? 5}
         userName="Demo User" // Replace with actual user name
         totalUsers={allUsers.length}
       />
