@@ -6,7 +6,6 @@ interface ImageCanvasProps {
   annotations: IAnnotatedViolation[];
   onBoundingBoxDrawn: (bbox: IBoundingBox) => void;
   disabled?: boolean;
-  selectedViolationIndex?: number | null;
 }
 
 interface DrawingState {
@@ -16,12 +15,11 @@ interface DrawingState {
   currentBox: { x: number; y: number; width: number; height: number } | null;
 }
 
-export default function ImageCanvas({ 
-  image, 
-  annotations, 
-  onBoundingBoxDrawn, 
+export default function ImageCanvas({
+  image,
+  annotations,
+  onBoundingBoxDrawn,
   disabled = false,
-  selectedViolationIndex
 }: ImageCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [drawingState, setDrawingState] = useState<DrawingState>({
@@ -167,11 +165,7 @@ export default function ImageCanvas({
         {/* Instructions */}
         {!disabled && (
           <div className="absolute bottom-4 left-4 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded-lg px-3 py-2">
-            <p className="text-xs text-text-muted">
-              {selectedViolationIndex !== null 
-                ? "Click and drag to annotate the selected violation" 
-                : "Select a violation first, then draw bounding box"}
-            </p>
+            <p className="text-xs text-text-muted">Draw a bounding box to annotate</p>
           </div>
         )}
       </div>
