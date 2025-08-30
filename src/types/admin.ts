@@ -13,7 +13,7 @@ export interface IUser {
 }
 
 export interface IViolation {
-  name: "Helmet Missing" | "Fire Hazard" | "Dust" | "Parking";
+  name: string;
   description: string;
   severity: "Critical" | "High" | "Medium" | "Low";
 }

@@ -11,7 +11,6 @@ interface ViolationsListProps {
   annotatedViolations: IAnnotatedViolation[];
   onAddViolation: () => void;
   onRemoveViolation: (index: number) => void;
-  onSelectViolation: (index: number) => void;
 }
 
 const severityIconMap: Record<string, ElementType> = {
@@ -21,7 +20,7 @@ const severityIconMap: Record<string, ElementType> = {
   Low: Info,
 };
 
-export default function ViolationsList({ violations, annotatedViolations, onAddViolation, onRemoveViolation, onSelectViolation }: ViolationsListProps) {
+export default function ViolationsList({ violations, annotatedViolations, onAddViolation, onRemoveViolation }: ViolationsListProps) {
   const getAnnotatedViolation = (violationIndex: number) => {
     return annotatedViolations.find(av => av.name === violations[violationIndex]?.name);
   };
@@ -104,16 +103,6 @@ export default function ViolationsList({ violations, annotatedViolations, onAddV
                   </div>
 
                   <div className="flex items-center gap-1">
-                    {!isAnnotated && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => onSelectViolation(index)}
-                        className="text-adani-primary hover:text-adani-primary/80 hover:bg-adani-primary/10 p-1 h-auto text-xs"
-                      >
-                        Select
-                      </Button>
-                    )}
                     <Button
                       variant="ghost"
                       size="sm"

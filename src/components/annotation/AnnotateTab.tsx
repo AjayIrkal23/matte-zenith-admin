@@ -22,7 +22,7 @@ export default function AnnotateTab() {
   const [annotatedViolations, setAnnotatedViolations] = useState<IAnnotatedViolation[]>([]);
   const [pendingBbox, setPendingBbox] = useState<IBoundingBox | null>(null);
   const [showViolationPicker, setShowViolationPicker] = useState(false);
-  const [selectedViolationIndex, setSelectedViolationIndex] = useState<number | null>(null);
+  const [pickerStartInAdd, setPickerStartInAdd] = useState(false);
 
   const currentImage = images[currentImageIndex];
 
@@ -39,7 +39,6 @@ export default function AnnotateTab() {
       setAnnotatedViolations([]);
       setPendingBbox(null);
       setShowViolationPicker(false);
-      setSelectedViolationIndex(null);
     }
   }, [currentImageIndex, currentImage]);
 
@@ -56,6 +55,7 @@ export default function AnnotateTab() {
   };
 
   const handleAddViolation = () => {
+    setPickerStartInAdd(true);
     setShowViolationPicker(true);
   };
 
@@ -67,26 +67,10 @@ export default function AnnotateTab() {
     setAnnotatedViolations(prev => prev.filter(av => av.name !== violation.name));
   };
 
-  const handleSelectViolation = (index: number) => {
-    setSelectedViolationIndex(index);
-    // This will be used when drawing a bounding box
-  };
-
   const handleBoundingBoxDrawn = (bbox: IBoundingBox) => {
-    if (selectedViolationIndex !== null) {
-      // Direct assignment to selected violation
-      const violation = currentImageViolations[selectedViolationIndex];
-      const annotatedViolation: IAnnotatedViolation = {
-        ...violation,
-        bbox,
-      };
-      setAnnotatedViolations(prev => [...prev.filter(av => av.name !== violation.name), annotatedViolation]);
-      setSelectedViolationIndex(null);
-    } else {
-      // Show picker for violation selection
-      setPendingBbox(bbox);
-      setShowViolationPicker(true);
-    }
+    setPickerStartInAdd(false);
+    setPendingBbox(bbox);
+    setShowViolationPicker(true);
   };
 
   const handleViolationSelected = (violation: IViolation) => {
@@ -95,10 +79,12 @@ export default function AnnotateTab() {
         ...violation,
         bbox: pendingBbox,
       };
-      setAnnotatedViolations(prev => [...prev.filter(av => av.name !== violation.name), annotatedViolation]);
+      setAnnotatedViolations(prev => [...prev, annotatedViolation]);
+      if (!currentImageViolations.some(v => v.name === violation.name)) {
+        setCurrentImageViolations(prev => [...prev, violation]);
+      }
       setPendingBbox(null);
     } else {
-      // Adding new violation to the list
       setCurrentImageViolations(prev => [...prev, violation]);
     }
     setShowViolationPicker(false);
@@ -217,7 +203,6 @@ export default function AnnotateTab() {
                 annotations={annotatedViolations}
                 onBoundingBoxDrawn={handleBoundingBoxDrawn}
                 disabled={isAllAssigned}
-                selectedViolationIndex={selectedViolationIndex}
               />
             </CardContent>
           </Card>
@@ -230,7 +215,6 @@ export default function AnnotateTab() {
             annotatedViolations={annotatedViolations}
             onAddViolation={handleAddViolation}
             onRemoveViolation={handleRemoveViolation}
-            onSelectViolation={handleSelectViolation}
           />
         </div>
       </div>
@@ -241,9 +225,12 @@ export default function AnnotateTab() {
         onClose={() => {
           setShowViolationPicker(false);
           setPendingBbox(null);
+          setPickerStartInAdd(false);
         }}
         onViolationSelected={handleViolationSelected}
         imageName={currentImage?.name || ""}
+        violations={currentImageViolations}
+        startInAdd={pickerStartInAdd}
       />
     </div>
   );

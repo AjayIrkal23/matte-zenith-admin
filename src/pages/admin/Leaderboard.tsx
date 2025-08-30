@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
@@ -9,7 +9,7 @@ import {
   selectLeaderboardError,
   selectUserRank,
 } from "@/store/slices/leaderboardSlice";
-import { fetchUsers, selectTotalValidatedImages } from "@/store/slices/usersSlice";
+import { fetchUsers } from "@/store/slices/usersSlice";
 import LeaderboardStats from "@/components/leaderboard/LeaderboardStats";
 import TopPerformers from "@/components/leaderboard/TopPerformers";
 import LeaderboardTable from "@/components/leaderboard/LeaderboardTable";
@@ -21,7 +21,10 @@ export default function LeaderboardPage() {
   const allUsers = useAppSelector(selectLeaderboardAll);
   const status = useAppSelector(selectLeaderboardStatus);
   const error = useAppSelector(selectLeaderboardError);
-  const totalValidatedImages = useAppSelector(selectTotalValidatedImages);
+  const totalValidatedImages = useMemo(
+    () => allUsers.reduce((sum, u) => sum + u.validatedImages, 0),
+    [allUsers]
+  );
   
   // Get current user's rank (mock user for demo)
   const userRank = useAppSelector((state) => selectUserRank(state, "2")); // Using user ID "2" as demo
