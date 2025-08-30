@@ -1,12 +1,12 @@
 import { useState, useRef, useCallback } from "react";
-import { IImage, IAnnotatedViolation, IBoundingBox, IViolation } from "@/types/admin";
-import { ViolationPicker } from "@/components/images/ViolationPicker";
+import { IImage, IAnnotatedViolation, IBoundingBox } from "@/types/admin";
 
 interface ImageCanvasProps {
   image: IImage;
   annotations: IAnnotatedViolation[];
-  onAddAnnotation: (annotation: IAnnotatedViolation) => void;
+  onBoundingBoxDrawn: (bbox: IBoundingBox) => void;
   disabled?: boolean;
+  selectedViolationIndex?: number | null;
 }
 
 interface DrawingState {
@@ -16,7 +16,13 @@ interface DrawingState {
   currentBox: { x: number; y: number; width: number; height: number } | null;
 }
 
-export default function ImageCanvas({ image, annotations, onAddAnnotation, disabled }: ImageCanvasProps) {
+export default function ImageCanvas({ 
+  image, 
+  annotations, 
+  onBoundingBoxDrawn, 
+  disabled = false,
+  selectedViolationIndex
+}: ImageCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [drawingState, setDrawingState] = useState<DrawingState>({
     isDrawing: false,
@@ -24,8 +30,6 @@ export default function ImageCanvas({ image, annotations, onAddAnnotation, disab
     startY: 0,
     currentBox: null,
   });
-  const [showViolationPicker, setShowViolationPicker] = useState(false);
-  const [pendingBox, setPendingBox] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (disabled) return;
@@ -66,10 +70,19 @@ export default function ImageCanvas({ image, annotations, onAddAnnotation, disab
   const handleMouseUp = useCallback(() => {
     if (!drawingState.isDrawing || !drawingState.currentBox || disabled) return;
 
-    // Only show picker if box is large enough
+    // Only create bounding box if it has meaningful size
     if (drawingState.currentBox.width > 0.02 && drawingState.currentBox.height > 0.02) {
-      setPendingBox(drawingState.currentBox);
-      setShowViolationPicker(true);
+      const boundingBox: IBoundingBox = {
+        id: `bbox-${Date.now()}`,
+        x: drawingState.currentBox.x,
+        y: drawingState.currentBox.y,
+        width: drawingState.currentBox.width,
+        height: drawingState.currentBox.height,
+        createdAt: new Date().toISOString(),
+        createdBy: "current-user", // Replace with actual user ID
+      };
+
+      onBoundingBoxDrawn(boundingBox);
     }
 
     setDrawingState({
@@ -78,30 +91,7 @@ export default function ImageCanvas({ image, annotations, onAddAnnotation, disab
       startY: 0,
       currentBox: null,
     });
-  }, [drawingState.isDrawing, drawingState.currentBox, disabled]);
-
-  const handleViolationSelected = (violation: IViolation) => {
-    if (!pendingBox) return;
-
-    const bbox: IBoundingBox = {
-      id: `bbox-${Date.now()}`,
-      x: pendingBox.x,
-      y: pendingBox.y,
-      width: pendingBox.width,
-      height: pendingBox.height,
-      createdAt: new Date().toISOString(),
-      createdBy: "current-user", // Replace with actual user ID
-    };
-
-    const annotatedViolation: IAnnotatedViolation = {
-      ...violation,
-      bbox,
-    };
-
-    onAddAnnotation(annotatedViolation);
-    setShowViolationPicker(false);
-    setPendingBox(null);
-  };
+  }, [drawingState.isDrawing, drawingState.currentBox, disabled, onBoundingBoxDrawn]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -114,83 +104,77 @@ export default function ImageCanvas({ image, annotations, onAddAnnotation, disab
   };
 
   return (
-    <>
-      <div className="relative w-full">
-        <div
-          ref={canvasRef}
-          className={`relative w-full aspect-video bg-black rounded-lg overflow-hidden ${
-            disabled ? 'cursor-not-allowed' : 'cursor-crosshair'
-          }`}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-        >
-          {/* Image */}
-          <img
-            src={image.imageURL}
-            alt={image.name}
-            className="w-full h-full object-contain pointer-events-none"
-            draggable={false}
-          />
+    <div className="relative w-full">
+      <div
+        ref={canvasRef}
+        className={`relative w-full aspect-video bg-black rounded-lg overflow-hidden ${
+          disabled ? 'cursor-not-allowed' : 'cursor-crosshair'
+        }`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        {/* Image */}
+        <img
+          src={image.imageURL}
+          alt={image.name}
+          className="w-full h-full object-contain pointer-events-none"
+          draggable={false}
+        />
 
-          {/* Existing annotations */}
-          {annotations.map((annotation) => (
-            <div
-              key={annotation.bbox.id}
-              className={`absolute border-2 ${getSeverityColor(annotation.severity)} pointer-events-none`}
-              style={{
-                left: `${annotation.bbox.x * 100}%`,
-                top: `${annotation.bbox.y * 100}%`,
-                width: `${annotation.bbox.width * 100}%`,
-                height: `${annotation.bbox.height * 100}%`,
-              }}
-            >
-              <div className={`absolute -top-6 left-0 px-2 py-1 text-xs font-medium rounded ${getSeverityColor(annotation.severity)}`}>
+        {/* Existing annotations */}
+        {annotations.map((annotation) => (
+          <div
+            key={annotation.bbox.id}
+            className={`absolute border-2 ${getSeverityColor(annotation.severity)} pointer-events-none`}
+            style={{
+              left: `${annotation.bbox.x * 100}%`,
+              top: `${annotation.bbox.y * 100}%`,
+              width: `${annotation.bbox.width * 100}%`,
+              height: `${annotation.bbox.height * 100}%`,
+            }}
+          >
+            <div className="absolute -top-6 left-0 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded px-2 py-1">
+              <span className="text-xs font-medium text-text-primary">
                 {annotation.name}
-              </div>
+              </span>
             </div>
-          ))}
+          </div>
+        ))}
 
-          {/* Current drawing box */}
-          {drawingState.currentBox && (
-            <div
-              className="absolute border-2 border-adani-primary bg-adani-primary/20 pointer-events-none"
-              style={{
-                left: `${drawingState.currentBox.x * 100}%`,
-                top: `${drawingState.currentBox.y * 100}%`,
-                width: `${drawingState.currentBox.width * 100}%`,
-                height: `${drawingState.currentBox.height * 100}%`,
-              }}
-            />
-          )}
+        {/* Current drawing box */}
+        {drawingState.currentBox && (
+          <div
+            className="absolute border-2 border-adani-primary bg-adani-primary/20 pointer-events-none"
+            style={{
+              left: `${drawingState.currentBox.x * 100}%`,
+              top: `${drawingState.currentBox.y * 100}%`,
+              width: `${drawingState.currentBox.width * 100}%`,
+              height: `${drawingState.currentBox.height * 100}%`,
+            }}
+          />
+        )}
 
-          {/* Disabled overlay */}
-          {disabled && (
-            <div className="absolute inset-0 bg-green-500/10 flex items-center justify-center">
-              <div className="bg-green-500/20 text-green-300 px-4 py-2 rounded-lg border border-green-500/30">
-                All violations assigned - Image locked
-              </div>
+        {/* Disabled overlay */}
+        {disabled && (
+          <div className="absolute inset-0 bg-green-500/10 flex items-center justify-center">
+            <div className="bg-green-500/20 text-green-300 px-4 py-2 rounded-lg border border-green-500/30">
+              All violations assigned - Image locked
             </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Instructions */}
         {!disabled && (
-          <p className="text-xs text-text-muted mt-2 text-center">
-            Click and drag to draw bounding boxes around violations
-          </p>
+          <div className="absolute bottom-4 left-4 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded-lg px-3 py-2">
+            <p className="text-xs text-text-muted">
+              {selectedViolationIndex !== null 
+                ? "Click and drag to annotate the selected violation" 
+                : "Select a violation first, then draw bounding box"}
+            </p>
+          </div>
         )}
       </div>
-
-      <ViolationPicker
-        isOpen={showViolationPicker}
-        onClose={() => {
-          setShowViolationPicker(false);
-          setPendingBox(null);
-        }}
-        onViolationSelected={handleViolationSelected}
-        imageName={image.name}
-      />
-    </>
+    </div>
   );
 }

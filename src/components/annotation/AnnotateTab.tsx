@@ -9,7 +9,8 @@ import { ChevronLeft, ChevronRight, Save, CheckCircle } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import ImageCanvas from "./ImageCanvas";
 import ViolationsList from "./ViolationsList";
-import { IAnnotatedImage, IAnnotatedViolation, IBoundingBox } from "@/types/admin";
+import { ViolationPicker } from "@/components/images/ViolationPicker";
+import { IAnnotatedImage, IAnnotatedViolation, IViolation, IBoundingBox } from "@/types/admin";
 
 export default function AnnotateTab() {
   const dispatch = useAppDispatch();
@@ -17,8 +18,11 @@ export default function AnnotateTab() {
   const imagesStatus = useAppSelector(selectImagesStatus);
   
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentImageViolations, setCurrentImageViolations] = useState<IViolation[]>([]);
   const [annotatedViolations, setAnnotatedViolations] = useState<IAnnotatedViolation[]>([]);
-  const [isValidated, setIsValidated] = useState(false);
+  const [pendingBbox, setPendingBbox] = useState<IBoundingBox | null>(null);
+  const [showViolationPicker, setShowViolationPicker] = useState(false);
+  const [selectedViolationIndex, setSelectedViolationIndex] = useState<number | null>(null);
 
   const currentImage = images[currentImageIndex];
 
@@ -29,10 +33,15 @@ export default function AnnotateTab() {
   }, [imagesStatus, dispatch]);
 
   useEffect(() => {
-    // Reset annotations when switching images
-    setAnnotatedViolations([]);
-    setIsValidated(false);
-  }, [currentImageIndex]);
+    // Reset annotations and violations when switching images
+    if (currentImage) {
+      setCurrentImageViolations([...currentImage.violations]);
+      setAnnotatedViolations([]);
+      setPendingBbox(null);
+      setShowViolationPicker(false);
+      setSelectedViolationIndex(null);
+    }
+  }, [currentImageIndex, currentImage]);
 
   const handlePrevious = () => {
     if (currentImageIndex > 0) {
@@ -46,12 +55,53 @@ export default function AnnotateTab() {
     }
   };
 
-  const handleAddAnnotation = (violation: IAnnotatedViolation) => {
-    setAnnotatedViolations(prev => [...prev, violation]);
+  const handleAddViolation = () => {
+    setShowViolationPicker(true);
   };
 
-  const handleRemoveAnnotation = (id: string) => {
-    setAnnotatedViolations(prev => prev.filter(v => v.bbox.id !== id));
+  const handleRemoveViolation = (index: number) => {
+    const violation = currentImageViolations[index];
+    // Remove from violations list
+    setCurrentImageViolations(prev => prev.filter((_, i) => i !== index));
+    // Remove any associated annotation
+    setAnnotatedViolations(prev => prev.filter(av => av.name !== violation.name));
+  };
+
+  const handleSelectViolation = (index: number) => {
+    setSelectedViolationIndex(index);
+    // This will be used when drawing a bounding box
+  };
+
+  const handleBoundingBoxDrawn = (bbox: IBoundingBox) => {
+    if (selectedViolationIndex !== null) {
+      // Direct assignment to selected violation
+      const violation = currentImageViolations[selectedViolationIndex];
+      const annotatedViolation: IAnnotatedViolation = {
+        ...violation,
+        bbox,
+      };
+      setAnnotatedViolations(prev => [...prev.filter(av => av.name !== violation.name), annotatedViolation]);
+      setSelectedViolationIndex(null);
+    } else {
+      // Show picker for violation selection
+      setPendingBbox(bbox);
+      setShowViolationPicker(true);
+    }
+  };
+
+  const handleViolationSelected = (violation: IViolation) => {
+    if (pendingBbox) {
+      const annotatedViolation: IAnnotatedViolation = {
+        ...violation,
+        bbox: pendingBbox,
+      };
+      setAnnotatedViolations(prev => [...prev.filter(av => av.name !== violation.name), annotatedViolation]);
+      setPendingBbox(null);
+    } else {
+      // Adding new violation to the list
+      setCurrentImageViolations(prev => [...prev, violation]);
+    }
+    setShowViolationPicker(false);
   };
 
   const handleSubmit = async () => {
@@ -86,9 +136,10 @@ export default function AnnotateTab() {
   };
 
   const checkIfAllViolationsAssigned = () => {
-    if (!currentImage) return false;
-    return currentImage.violations.length > 0 && 
-           annotatedViolations.length >= currentImage.violations.length;
+    if (currentImageViolations.length === 0) return false;
+    return currentImageViolations.every(violation => 
+      annotatedViolations.some(av => av.name === violation.name)
+    );
   };
 
   const isAllAssigned = checkIfAllViolationsAssigned();
@@ -146,7 +197,7 @@ export default function AnnotateTab() {
           
           <Button
             onClick={handleSubmit}
-            disabled={annotatedViolations.length === 0}
+            disabled={!isAllAssigned}
             className="btn-adani"
           >
             <Save className="w-4 h-4 mr-2" />
@@ -164,8 +215,9 @@ export default function AnnotateTab() {
               <ImageCanvas
                 image={currentImage}
                 annotations={annotatedViolations}
-                onAddAnnotation={handleAddAnnotation}
+                onBoundingBoxDrawn={handleBoundingBoxDrawn}
                 disabled={isAllAssigned}
+                selectedViolationIndex={selectedViolationIndex}
               />
             </CardContent>
           </Card>
@@ -174,11 +226,25 @@ export default function AnnotateTab() {
         {/* Violations List - 1/3 width */}
         <div className="lg:col-span-1">
           <ViolationsList
-            violations={annotatedViolations}
-            onRemoveViolation={handleRemoveAnnotation}
+            violations={currentImageViolations}
+            annotatedViolations={annotatedViolations}
+            onAddViolation={handleAddViolation}
+            onRemoveViolation={handleRemoveViolation}
+            onSelectViolation={handleSelectViolation}
           />
         </div>
       </div>
+
+      {/* Violation Picker Modal */}
+      <ViolationPicker
+        isOpen={showViolationPicker}
+        onClose={() => {
+          setShowViolationPicker(false);
+          setPendingBbox(null);
+        }}
+        onViolationSelected={handleViolationSelected}
+        imageName={currentImage?.name || ""}
+      />
     </div>
   );
 }

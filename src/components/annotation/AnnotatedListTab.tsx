@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   fetchAnnotatedImages,
@@ -8,14 +8,18 @@ import {
 } from "@/store/slices/annotatedImagesSlice";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Calendar, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { CheckCircle, Calendar, User, Eye } from "lucide-react";
 import { format } from "date-fns";
+import ImageViewModal from "./ImageViewModal";
+import { IAnnotatedImage } from "@/types/admin";
 
 export default function AnnotatedListTab() {
   const dispatch = useAppDispatch();
   const annotatedImages = useAppSelector(selectAnnotatedImages);
   const status = useAppSelector(selectAnnotatedImagesStatus);
   const pagination = useAppSelector(selectAnnotatedImagesPagination);
+  const [selectedImage, setSelectedImage] = useState<IAnnotatedImage | null>(null);
 
   useEffect(() => {
     if (status === 'idle') {
@@ -114,10 +118,31 @@ export default function AnnotatedListTab() {
                   )}
                 </div>
               </div>
+
+              <div className="mt-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSelectedImage(image)}
+                  className="w-full btn-secondary"
+                >
+                  <Eye className="w-3 h-3 mr-2" />
+                  View Annotations
+                </Button>
+              </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* Image View Modal */}
+      {selectedImage && (
+        <ImageViewModal
+          isOpen={!!selectedImage}
+          onClose={() => setSelectedImage(null)}
+          annotatedImage={selectedImage}
+        />
+      )}
     </div>
   );
 }
