@@ -19,15 +19,17 @@ export default function AnnotatedListTab() {
   const annotatedImages = useAppSelector(selectAnnotatedImages);
   const status = useAppSelector(selectAnnotatedImagesStatus);
   const pagination = useAppSelector(selectAnnotatedImagesPagination);
-  const [selectedImage, setSelectedImage] = useState<IAnnotatedImage | null>(null);
+  const [selectedImage, setSelectedImage] = useState<IAnnotatedImage | null>(
+    null
+  );
 
   useEffect(() => {
-    if (status === 'idle') {
+    if (status === "idle") {
       dispatch(fetchAnnotatedImages({ page: 1, pageSize: 20 }));
     }
   }, [status, dispatch]);
 
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center space-y-4">
@@ -44,8 +46,12 @@ export default function AnnotatedListTab() {
         <div className="text-center space-y-4">
           <CheckCircle className="w-16 h-16 text-text-muted mx-auto" />
           <div>
-            <h3 className="text-lg font-semibold text-text-primary">No Annotated Images</h3>
-            <p className="text-text-muted">Start annotating images in the Annotate tab</p>
+            <h3 className="text-lg font-semibold text-text-primary">
+              No Annotated Images
+            </h3>
+            <p className="text-text-muted">
+              Start annotating images in the Annotate tab
+            </p>
           </div>
         </div>
       </div>
@@ -56,10 +62,10 @@ export default function AnnotatedListTab() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-text-primary">Annotated Images</h3>
-          <p className="text-text-muted">
-            {pagination.total} images annotated
-          </p>
+          <h3 className="text-lg font-semibold text-text-primary">
+            Annotated Images
+          </h3>
+          <p className="text-text-muted">{pagination.total} images annotated</p>
         </div>
       </div>
 
@@ -79,38 +85,42 @@ export default function AnnotatedListTab() {
                 </Badge>
               </div>
             </div>
-            
+
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium text-text-primary truncate">
                 {image.name}
               </CardTitle>
             </CardHeader>
-            
-            <CardContent className="space-y-3">
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <Calendar className="w-3 h-3" />
-                {format(new Date(image.annotatedAt), 'MMM dd, yyyy')}
+
+            <CardContent className="space-y-2">
+              <div>
+                {" "}
+                <div className="flex items-center gap-2 text-xs text-text-muted">
+                  <Calendar className="w-3 h-3" />
+                  {format(new Date(image.annotatedAt), "MMM dd, yyyy")}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-text-muted">
+                  <User className="w-3 h-3" />
+                  {image.annotatedBy}
+                </div>
               </div>
-              
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <User className="w-3 h-3" />
-                {image.annotatedBy}
-              </div>
-              
+
               <div className="space-y-2">
                 <p className="text-xs font-medium text-text-primary">
                   Violations ({image.annotatedViolations.length})
                 </p>
                 <div className="flex flex-wrap gap-1">
-                  {image.annotatedViolations.slice(0, 3).map((violation, index) => (
-                    <Badge
-                      key={index}
-                      variant="secondary"
-                      className="text-xs"
-                    >
-                      {violation.name}
-                    </Badge>
-                  ))}
+                  {image.annotatedViolations
+                    .slice(0, 3)
+                    .map((violation, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-xs"
+                      >
+                        {violation.name}
+                      </Badge>
+                    ))}
                   {image.annotatedViolations.length > 3 && (
                     <Badge variant="secondary" className="text-xs">
                       +{image.annotatedViolations.length - 3}

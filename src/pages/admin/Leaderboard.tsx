@@ -25,7 +25,7 @@ export default function LeaderboardPage() {
     () => allUsers.reduce((sum, u) => sum + u.validatedImages, 0),
     [allUsers]
   );
-  
+
   // Get current user's rank (mock user for demo)
   const userRank = useAppSelector((state) => selectUserRank(state, "2")); // Using user ID "2" as demo
   const [showRankModal, setShowRankModal] = useState(false);
@@ -40,15 +40,13 @@ export default function LeaderboardPage() {
   }, [status, dispatch]);
 
   useEffect(() => {
-    if (!hasShownModal && allUsers.length > 0 && userRank) {
-      // Show modal after a small delay to let the page load
-      const timer = setTimeout(() => {
-        setShowRankModal(true);
-        setHasShownModal(true);
-      }, 800);
-      
-      return () => clearTimeout(timer);
-    }
+    // Show modal after a small delay to let the page load
+    const timer = setTimeout(() => {
+      setShowRankModal(true);
+      setHasShownModal(true);
+    }, 800);
+
+    return () => clearTimeout(timer);
   }, [allUsers.length, hasShownModal, userRank]);
 
   return (
@@ -79,11 +77,10 @@ export default function LeaderboardPage() {
       <RankModal
         isOpen={showRankModal}
         onClose={() => setShowRankModal(false)}
-        userRank={userRank ?? 5}
-        userName="Demo User" // Replace with actual user name
+        userRank={userRank ?? 3}
+        userName="Rajesh Kumar" // Replace with actual user name
         totalUsers={allUsers.length}
       />
     </motion.div>
   );
 }
-
