@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Users, Images, Trophy, Building2, BarChart3 } from "lucide-react";
+import { Users, Images, Trophy, Building2, BarChart3, PenTool } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Sidebar,
@@ -44,6 +44,12 @@ const navigationItems = [
     href: "/admin/leaderboard",
     icon: Trophy,
     description: "Performance rankings",
+  },
+  {
+    title: "Annotation",
+    href: "/admin/annotation",
+    icon: PenTool,
+    description: "Image annotation",
   },
 ];
 

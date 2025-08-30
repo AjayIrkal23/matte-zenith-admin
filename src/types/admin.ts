@@ -26,6 +26,8 @@ export interface IImage {
   violations: IViolation[];
   uploadedAt?: string;
   fileSize?: number;
+  // NEW: default from imagesSlice when uploading
+  aivalidated?: boolean; // default false on upload
 }
 
 // Redux state types
@@ -70,6 +72,40 @@ export interface UserFormData {
   empid: string;
   department: string;
   validatedImages: number;
+}
+
+// New for annotation
+export interface IBoundingBox {
+  id: string;
+  x: number;  // normalized [0..1]
+  y: number;
+  width: number;
+  height: number;
+  createdAt: string;
+  createdBy: string; // empid or user id
+}
+
+export interface IAnnotatedViolation extends IViolation {
+  bbox: IBoundingBox;        // the drawn box for this violation
+  notes?: string;            // optional analyst note
+  isNew?: boolean;           // true if user created a brand-new violation label
+}
+
+export interface IAnnotatedImage extends IImage {
+  annotatedAt: string;
+  annotatedBy: string;       // empid or user id
+  validated: boolean;        // true when all violations for this image are assigned
+  // Replace raw violations with annotated ones specifically for this record:
+  annotatedViolations: IAnnotatedViolation[];
+}
+
+export interface AnnotatedImagesState {
+  items: IAnnotatedImage[];
+  page: number;
+  pageSize: number;
+  total: number;
+  status: AsyncStatus;
+  error?: string;
 }
 
 // Component prop types

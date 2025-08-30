@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import confetti from "canvas-confetti";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
   recomputeLeaderboard,
@@ -8,12 +7,13 @@ import {
   selectLeaderboardAll,
   selectLeaderboardStatus,
   selectLeaderboardError,
+  selectUserRank,
 } from "@/store/slices/leaderboardSlice";
 import { fetchUsers, selectTotalValidatedImages } from "@/store/slices/usersSlice";
-import { toast } from "@/hooks/use-toast";
 import LeaderboardStats from "@/components/leaderboard/LeaderboardStats";
 import TopPerformers from "@/components/leaderboard/TopPerformers";
 import LeaderboardTable from "@/components/leaderboard/LeaderboardTable";
+import RankModal from "@/components/leaderboard/RankModal";
 
 export default function LeaderboardPage() {
   const dispatch = useAppDispatch();
@@ -22,8 +22,11 @@ export default function LeaderboardPage() {
   const status = useAppSelector(selectLeaderboardStatus);
   const error = useAppSelector(selectLeaderboardError);
   const totalValidatedImages = useAppSelector(selectTotalValidatedImages);
-
-  const [hasShownConfetti, setHasShownConfetti] = useState(false);
+  
+  // Get current user's rank (mock user for demo)
+  const userRank = useAppSelector((state) => selectUserRank(state, "2")); // Using user ID "2" as demo
+  const [showRankModal, setShowRankModal] = useState(false);
+  const [hasShownModal, setHasShownModal] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -34,22 +37,16 @@ export default function LeaderboardPage() {
   }, [status, dispatch]);
 
   useEffect(() => {
-    if (error) {
-      toast({ title: "Error", description: error, variant: "destructive" });
+    if (!hasShownModal && allUsers.length > 0 && userRank) {
+      // Show modal after a small delay to let the page load
+      const timer = setTimeout(() => {
+        setShowRankModal(true);
+        setHasShownModal(true);
+      }, 800);
+      
+      return () => clearTimeout(timer);
     }
-  }, [error]);
-
-  useEffect(() => {
-    if (!hasShownConfetti && allUsers.length > 0) {
-      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
-      toast({
-        title: "🎉 Congratulations!",
-        description: "You are in dummy #2 position.",
-        duration: 5000,
-      });
-      setHasShownConfetti(true);
-    }
-  }, [allUsers.length, hasShownConfetti]);
+  }, [allUsers.length, hasShownModal, userRank]);
 
   return (
     <motion.div
@@ -75,6 +72,14 @@ export default function LeaderboardPage() {
       {top3.length > 0 && <TopPerformers top3={top3} status={status} />}
 
       <LeaderboardTable users={allUsers} status={status} />
+
+      <RankModal
+        isOpen={showRankModal}
+        onClose={() => setShowRankModal(false)}
+        userRank={userRank || 1}
+        userName="Demo User" // Replace with actual user name
+        totalUsers={allUsers.length}
+      />
     </motion.div>
   );
 }

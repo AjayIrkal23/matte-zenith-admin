@@ -11,6 +11,7 @@ import DashboardPage from "@/pages/admin/Dashboard";
 import UsersPage from "@/pages/admin/Users";
 import ImagesPage from "@/pages/admin/Images";
 import LeaderboardPage from "@/pages/admin/Leaderboard";
+import AnnotationPage from "@/pages/admin/Annotation";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -59,6 +60,13 @@ const App = () => (
             <ProtectedRoute>
               <AdminLayout>
                 <LeaderboardPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/annotation" element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <AnnotationPage />
               </AdminLayout>
             </ProtectedRoute>
           } />
