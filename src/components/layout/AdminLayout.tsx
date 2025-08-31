@@ -17,7 +17,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
   }, []);
 
   useEffect(() => {
-    if (windowWidth < 900) {
+    // Collapse the sidebar when the viewport is narrower than 960px
+    if (windowWidth < 960) {
       setSidebarCollapsed(true);
     } else {
       setSidebarCollapsed(false);
