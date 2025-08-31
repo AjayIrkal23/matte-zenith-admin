@@ -8,6 +8,8 @@ interface ImageCanvasProps {
     bbox: IBoundingBox & { imageWidth: number; imageHeight: number }
   ) => void;
   disabled?: boolean;
+  width: number;
+  height: number;
 }
 
 interface DrawingState {
@@ -22,6 +24,8 @@ export default function ImageCanvas({
   annotations,
   onBoundingBoxDrawn,
   disabled = false,
+  width,
+  height,
 }: ImageCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [drawingState, setDrawingState] = useState<DrawingState>({
@@ -92,8 +96,8 @@ export default function ImageCanvas({
         height: drawingState.currentBox.height,
         createdAt: new Date().toISOString(),
         createdBy: "current-user", // Replace with actual user ID
-        imageWidth: CANVAS_WIDTH,
-        imageHeight: CANVAS_HEIGHT,
+        imageWidth: width,
+        imageHeight: height,
       };
 
       onBoundingBoxDrawn(boundingBox);
@@ -127,9 +131,6 @@ export default function ImageCanvas({
     }
   };
 
-  const CANVAS_WIDTH = 704; // 10% more than 640
-  const CANVAS_HEIGHT = 528; // 10% more than 480
-
   return (
     <div className="relative w-full">
       <div
@@ -137,7 +138,7 @@ export default function ImageCanvas({
         className={`relative bg-black rounded-lg mx-auto overflow-hidden ${
           disabled ? "cursor-not-allowed" : "cursor-crosshair"
         }`}
-        style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
+        style={{ width, height }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
