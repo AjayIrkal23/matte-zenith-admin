@@ -8,6 +8,8 @@ interface ImageCanvasProps {
   disabled?: boolean;
   width: number;
   height: number;
+  /** Zoom level applied to the canvas (1 = 100%) */
+  zoom?: number;
 }
 
 interface DrawingState {
@@ -24,6 +26,7 @@ export default function ImageCanvas({
   disabled = false,
   width,
   height,
+  zoom = 1,
 }: ImageCanvasProps) {
   const canvasRef = useRef<HTMLDivElement>(null);
   const [drawingState, setDrawingState] = useState<DrawingState>({
@@ -127,13 +130,13 @@ export default function ImageCanvas({
   };
 
   return (
-    <div className="relative w-full">
+    <div className="relative w-full overflow-auto">
       <div
         ref={canvasRef}
         className={`relative bg-black rounded-lg mx-auto overflow-hidden ${
           disabled ? "cursor-not-allowed" : "cursor-crosshair"
         }`}
-        style={{ width, height }}
+        style={{ width: width * zoom, height: height * zoom }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
