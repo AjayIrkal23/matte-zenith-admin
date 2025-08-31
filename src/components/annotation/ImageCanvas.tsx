@@ -127,22 +127,17 @@ export default function ImageCanvas({
     }
   };
 
-  const CANVAS_WIDTH = 640; // 20% less than 800
-  const CANVAS_HEIGHT = 480; // 20% less than 600
+  const CANVAS_WIDTH = 704; // 10% more than 640
+  const CANVAS_HEIGHT = 528; // 10% more than 480
 
   return (
-    <div className="relative w-full flex justify-center">
+    <div className="relative w-full">
       <div
         ref={canvasRef}
-        className={`relative bg-black rounded-lg overflow-hidden max-w-full ${
+        className={`relative bg-black rounded-lg mx-auto overflow-hidden ${
           disabled ? "cursor-not-allowed" : "cursor-crosshair"
         }`}
-        style={{ 
-          width: "min(640px, 100%)", 
-          height: "min(480px, calc(100vw * 0.75))",
-          maxHeight: "480px",
-          aspectRatio: "4/3"
-        }}
+        style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -201,10 +196,9 @@ export default function ImageCanvas({
 
         {/* Instructions */}
         {!disabled && (
-          <div className="absolute bottom-2 left-2 sm:bottom-4 sm:left-4 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded-lg px-2 py-1 sm:px-3 sm:py-2">
+          <div className="absolute bottom-4 left-4 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded-lg px-3 py-2">
             <p className="text-xs text-text-muted">
-              <span className="hidden sm:inline">Draw a bounding box to annotate</span>
-              <span className="sm:hidden">Draw to annotate</span>
+              Draw a bounding box to annotate
             </p>
           </div>
         )}
