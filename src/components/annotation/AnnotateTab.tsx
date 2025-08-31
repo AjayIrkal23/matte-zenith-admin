@@ -9,7 +9,15 @@ import { submitAnnotatedImage } from "@/store/slices/annotatedImagesSlice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ChevronLeft, ChevronRight, Save, CheckCircle } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Save,
+  CheckCircle,
+  ZoomIn,
+  ZoomOut,
+  RotateCcw,
+} from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import ImageCanvas from "./ImageCanvas";
 import ViolationsList from "./ViolationsList";
@@ -37,6 +45,11 @@ export default function AnnotateTab() {
   const [showViolationPicker, setShowViolationPicker] = useState(false);
   const [pickerStartInAdd, setPickerStartInAdd] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 704, height: 528 });
+  const [zoom, setZoom] = useState(1);
+
+  const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 3));
+  const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 0.5));
+  const handleResetZoom = () => setZoom(1);
 
   const currentImage = images[currentImageIndex];
 
@@ -242,14 +255,32 @@ export default function AnnotateTab() {
             }`}
           >
             <CardContent className="p-0">
-              <ImageCanvas
-                image={currentImage}
-                annotations={annotatedViolations}
-                onBoundingBoxDrawn={handleBoundingBoxDrawn}
-                disabled={isAllAssigned}
-                width={canvasSize.width}
-                height={canvasSize.height}
-              />
+              <div className="relative">
+                <div className="absolute top-2 right-2 z-10 flex items-center gap-2 bg-panel-bg/80 backdrop-blur-sm border border-panel-border rounded-md p-1">
+                  <Button variant="ghost" size="sm" onClick={handleZoomOut}>
+                    <ZoomOut className="w-4 h-4" />
+                  </Button>
+                  <span className="text-xs text-text-muted min-w-12 text-center">
+                    {Math.round(zoom * 100)}%
+                  </span>
+                  <Button variant="ghost" size="sm" onClick={handleZoomIn}>
+                    <ZoomIn className="w-4 h-4" />
+                  </Button>
+                  <Button variant="ghost" size="sm" onClick={handleResetZoom}>
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <ImageCanvas
+                  image={currentImage}
+                  annotations={annotatedViolations}
+                  onBoundingBoxDrawn={handleBoundingBoxDrawn}
+                  disabled={isAllAssigned}
+                  width={canvasSize.width}
+                  height={canvasSize.height}
+                  zoom={zoom}
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
