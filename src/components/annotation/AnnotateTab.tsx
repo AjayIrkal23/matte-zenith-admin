@@ -178,20 +178,20 @@ export default function AnnotateTab() {
   return (
     <div className="space-y-6">
       {/* Navigation Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-4">
           <Button
             variant="outline"
             size="sm"
             onClick={handlePrevious}
             disabled={currentImageIndex === 0}
-            className="btn-secondary"
+            className="btn-secondary flex-shrink-0"
           >
             <ChevronLeft className="w-4 h-4" />
-            Previous
+            <span className="hidden sm:inline">Previous</span>
           </Button>
 
-          <Badge variant="secondary" className="px-3 py-1">
+          <Badge variant="secondary" className="px-3 py-1 flex-shrink-0">
             {currentImageIndex + 1} of {images.length}
           </Badge>
 
@@ -200,39 +200,41 @@ export default function AnnotateTab() {
             size="sm"
             onClick={handleNext}
             disabled={currentImageIndex === images.length - 1}
-            className="btn-secondary"
+            className="btn-secondary flex-shrink-0"
           >
-            Next
+            <span className="hidden sm:inline">Next</span>
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {isAllAssigned && (
             <Badge
               variant="default"
-              className="bg-green-500/20 text-green-300 border-green-500/30"
+              className="bg-green-500/20 text-green-300 border-green-500/30 flex-shrink-0"
             >
               <CheckCircle className="w-3 h-3 mr-1" />
-              All Assigned
+              <span className="hidden sm:inline">All Assigned</span>
+              <span className="sm:hidden">Complete</span>
             </Badge>
           )}
 
           <Button
             onClick={handleSubmit}
             disabled={!isAllAssigned}
-            className="btn-adani"
+            className="btn-adani flex-shrink-0"
           >
             <Save className="w-4 h-4 mr-2" />
-            Submit Annotation
+            <span className="hidden sm:inline">Submit Annotation</span>
+            <span className="sm:hidden">Submit</span>
           </Button>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Image Canvas - 2/3 width */}
-        <div className="lg:col-span-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 lg:gap-6">
+        {/* Image Canvas - Responsive widths */}
+        <div className="md:col-span-1 lg:col-span-2 xl:col-span-3">
           <Card
             className={`glass-panel ${
               isAllAssigned ? "border-green-500/30 bg-green-500/5" : ""
@@ -249,8 +251,8 @@ export default function AnnotateTab() {
           </Card>
         </div>
 
-        {/* Violations List - 1/3 width */}
-        <div className="lg:col-span-1">
+        {/* Violations List - Responsive width */}
+        <div className="md:col-span-1 lg:col-span-1 xl:col-span-1">
           <ViolationsList
             violations={currentImageViolations}
             annotatedViolations={annotatedViolations}
