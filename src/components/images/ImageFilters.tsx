@@ -37,8 +37,12 @@ export const ImageFilters: React.FC<ImageFiltersProps> = ({
     <CardContent className="p-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Select
-          value={selectedSeverities.join(",")}
-          onValueChange={() => {}}
+          value={selectedSeverities.length > 0 ? selectedSeverities[0] : ""}
+          onValueChange={(value) => {
+            if (value && !selectedSeverities.includes(value)) {
+              onToggleSeverity(value);
+            }
+          }}
         >
           <SelectTrigger className="bg-hover-overlay/30 border-panel-border">
             <SelectValue placeholder="Filter by Severity" />
@@ -48,7 +52,6 @@ export const ImageFilters: React.FC<ImageFiltersProps> = ({
               <SelectItem
                 key={severity}
                 value={severity}
-                onClick={() => onToggleSeverity(severity)}
               >
                 <div className="flex items-center gap-2">
                   <div
@@ -63,6 +66,9 @@ export const ImageFilters: React.FC<ImageFiltersProps> = ({
                     }`}
                   />
                   {severity}
+                  {selectedSeverities.includes(severity) && (
+                    <span className="ml-auto text-adani-primary">✓</span>
+                  )}
                 </div>
               </SelectItem>
             ))}

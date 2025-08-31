@@ -103,12 +103,7 @@ export default function UsersPage() {
     const matchesDepartment =
       !selectedDepartment || user.department === selectedDepartment;
 
-    // Validated Images range filter
-    const matchesRange =
-      user.validatedImages >= validatedImagesRange[0] &&
-      user.validatedImages <= validatedImagesRange[1];
-
-    return matchesSearch && matchesDepartment && matchesRange;
+    return matchesSearch && matchesDepartment;
   });
 
   const handleEditUser = (user: IUser) => {
@@ -143,7 +138,6 @@ export default function UsersPage() {
 
   const resetFilters = () => {
     dispatch(setSelectedDepartment(undefined));
-    dispatch(setValidatedImagesRange([0, maxValidatedImages]));
     dispatch(setSearchQuery(""));
   };
 
@@ -179,7 +173,7 @@ export default function UsersPage() {
       {/* Filters */}
       <Card className="glass-panel">
         <CardContent className="p-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-text-muted" />
               <Input
@@ -211,24 +205,6 @@ export default function UsersPage() {
               </SelectContent>
             </Select>
 
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-text-muted">Validated Images</span>
-                <span className="text-adani-primary">
-                  {validatedImagesRange[0]} - {validatedImagesRange[1]}
-                </span>
-              </div>
-              <Slider
-                value={validatedImagesRange}
-                onValueChange={(value) =>
-                  dispatch(setValidatedImagesRange(value as [number, number]))
-                }
-                max={maxValidatedImages}
-                min={0}
-                step={1}
-                className="w-full"
-              />
-            </div>
 
             <Button
               variant="outline"

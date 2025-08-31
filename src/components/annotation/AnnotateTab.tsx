@@ -20,7 +20,7 @@ export default function AnnotateTab() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentImageViolations, setCurrentImageViolations] = useState<IViolation[]>([]);
   const [annotatedViolations, setAnnotatedViolations] = useState<IAnnotatedViolation[]>([]);
-  const [pendingBbox, setPendingBbox] = useState<IBoundingBox | null>(null);
+  const [pendingBbox, setPendingBbox] = useState<(IBoundingBox & { imageWidth: number; imageHeight: number }) | null>(null);
   const [showViolationPicker, setShowViolationPicker] = useState(false);
   const [pickerStartInAdd, setPickerStartInAdd] = useState(false);
 
@@ -67,7 +67,7 @@ export default function AnnotateTab() {
     setAnnotatedViolations(prev => prev.filter(av => av.name !== violation.name));
   };
 
-  const handleBoundingBoxDrawn = (bbox: IBoundingBox) => {
+  const handleBoundingBoxDrawn = (bbox: IBoundingBox & { imageWidth: number; imageHeight: number }) => {
     setPickerStartInAdd(false);
     setPendingBbox(bbox);
     setShowViolationPicker(true);
@@ -77,13 +77,26 @@ export default function AnnotateTab() {
     if (pendingBbox) {
       const annotatedViolation: IAnnotatedViolation = {
         ...violation,
-        bbox: pendingBbox,
+        bbox: {
+          id: pendingBbox.id,
+          x: pendingBbox.x,
+          y: pendingBbox.y,
+          width: pendingBbox.width,
+          height: pendingBbox.height,
+          createdAt: pendingBbox.createdAt,
+          createdBy: pendingBbox.createdBy,
+        },
       };
       setAnnotatedViolations(prev => [...prev, annotatedViolation]);
       if (!currentImageViolations.some(v => v.name === violation.name)) {
         setCurrentImageViolations(prev => [...prev, violation]);
       }
       setPendingBbox(null);
+
+      toast({
+        title: "Violation Annotated",
+        description: `${violation.name} has been annotated with bounding box (${pendingBbox.imageWidth}x${pendingBbox.imageHeight})`,
+      });
     } else {
       setCurrentImageViolations(prev => [...prev, violation]);
     }
