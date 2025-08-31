@@ -38,6 +38,7 @@ export default function AnnotateTab() {
   >(null);
   const [showViolationPicker, setShowViolationPicker] = useState(false);
   const [pickerStartInAdd, setPickerStartInAdd] = useState(false);
+  const [canvasSize, setCanvasSize] = useState({ width: 704, height: 528 });
 
   const currentImage = images[currentImageIndex];
 
@@ -56,6 +57,16 @@ export default function AnnotateTab() {
       setShowViolationPicker(false);
     }
   }, [currentImageIndex, currentImage]);
+
+  useEffect(() => {
+    if (currentImage?.imageURL) {
+      const img = new Image();
+      img.onload = () => {
+        setCanvasSize({ width: img.naturalWidth, height: img.naturalHeight });
+      };
+      img.src = currentImage.imageURL;
+    }
+  }, [currentImage]);
 
   const handlePrevious = () => {
     if (currentImageIndex > 0) {
@@ -244,6 +255,8 @@ export default function AnnotateTab() {
                 annotations={annotatedViolations}
                 onBoundingBoxDrawn={handleBoundingBoxDrawn}
                 disabled={isAllAssigned}
+                width={canvasSize.width}
+                height={canvasSize.height}
               />
             </CardContent>
           </Card>
