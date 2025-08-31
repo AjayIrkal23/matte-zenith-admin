@@ -4,7 +4,7 @@ import { IImage, IAnnotatedViolation, IBoundingBox } from "@/types/admin";
 interface ImageCanvasProps {
   image: IImage;
   annotations: IAnnotatedViolation[];
-  onBoundingBoxDrawn: (bbox: IBoundingBox) => void;
+  onBoundingBoxDrawn: (bbox: IBoundingBox & { imageWidth: number; imageHeight: number }) => void;
   disabled?: boolean;
 }
 
@@ -70,7 +70,7 @@ export default function ImageCanvas({
 
     // Only create bounding box if it has meaningful size
     if (drawingState.currentBox.width > 0.02 && drawingState.currentBox.height > 0.02) {
-      const boundingBox: IBoundingBox = {
+      const boundingBox: IBoundingBox & { imageWidth: number; imageHeight: number } = {
         id: `bbox-${Date.now()}`,
         x: drawingState.currentBox.x,
         y: drawingState.currentBox.y,
@@ -78,6 +78,8 @@ export default function ImageCanvas({
         height: drawingState.currentBox.height,
         createdAt: new Date().toISOString(),
         createdBy: "current-user", // Replace with actual user ID
+        imageWidth: CANVAS_WIDTH,
+        imageHeight: CANVAS_HEIGHT,
       };
 
       onBoundingBoxDrawn(boundingBox);
@@ -101,13 +103,17 @@ export default function ImageCanvas({
     }
   };
 
+  const CANVAS_WIDTH = 800;
+  const CANVAS_HEIGHT = 600;
+
   return (
     <div className="relative w-full">
       <div
         ref={canvasRef}
-        className={`relative w-full aspect-video bg-black rounded-lg overflow-hidden ${
+        className={`relative bg-black rounded-lg overflow-hidden ${
           disabled ? 'cursor-not-allowed' : 'cursor-crosshair'
         }`}
+        style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}

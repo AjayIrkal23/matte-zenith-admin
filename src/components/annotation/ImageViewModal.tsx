@@ -70,21 +70,20 @@ export default function ImageViewModal({ isOpen, onClose, annotatedImage }: Imag
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden">
-          <div className="relative w-full h-full border border-panel-border rounded-lg overflow-hidden bg-background-subtle">
-            <div 
-              className="relative w-full h-full overflow-auto"
-              style={{
-                transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-                transformOrigin: 'center center',
-              }}
-            >
-              <img
-                src={annotatedImage.imageURL}
-                alt={annotatedImage.name}
-                className="w-full h-full object-contain"
-                draggable={false}
-              />
+        <div className="flex-1 overflow-hidden relative">
+          <div 
+            className="relative w-full h-full overflow-auto"
+            style={{
+              transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
+              transformOrigin: 'center center',
+            }}
+          >
+            <img
+              src={annotatedImage.imageURL}
+              alt={annotatedImage.name}
+              className="w-full h-full object-cover"
+              draggable={false}
+            />
               
               {/* Bounding boxes overlay */}
               {annotatedImage.annotatedViolations.map((violation, index) => (
@@ -113,7 +112,6 @@ export default function ImageViewModal({ isOpen, onClose, annotatedImage }: Imag
                   </div>
                 </motion.div>
               ))}
-            </div>
           </div>
         </div>
 
