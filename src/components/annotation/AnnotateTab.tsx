@@ -33,9 +33,7 @@ export default function AnnotateTab() {
   const [annotatedViolations, setAnnotatedViolations] = useState<
     IAnnotatedViolation[]
   >([]);
-  const [pendingBbox, setPendingBbox] = useState<
-    (IBoundingBox & { imageWidth: number; imageHeight: number }) | null
-  >(null);
+  const [pendingBbox, setPendingBbox] = useState<IBoundingBox | null>(null);
   const [showViolationPicker, setShowViolationPicker] = useState(false);
   const [pickerStartInAdd, setPickerStartInAdd] = useState(false);
   const [canvasSize, setCanvasSize] = useState({ width: 704, height: 528 });
@@ -95,9 +93,7 @@ export default function AnnotateTab() {
     );
   };
 
-  const handleBoundingBoxDrawn = (
-    bbox: IBoundingBox & { imageWidth: number; imageHeight: number }
-  ) => {
+  const handleBoundingBoxDrawn = (bbox: IBoundingBox) => {
     setPickerStartInAdd(false);
     setPendingBbox(bbox);
     setShowViolationPicker(true);
@@ -107,15 +103,7 @@ export default function AnnotateTab() {
     if (pendingBbox) {
       const annotatedViolation: IAnnotatedViolation = {
         ...violation,
-        bbox: {
-          id: pendingBbox.id,
-          x: pendingBbox.x,
-          y: pendingBbox.y,
-          width: pendingBbox.width,
-          height: pendingBbox.height,
-          createdAt: pendingBbox.createdAt,
-          createdBy: pendingBbox.createdBy,
-        },
+        bbox: { ...pendingBbox },
       };
       setAnnotatedViolations((prev) => [...prev, annotatedViolation]);
       if (!currentImageViolations.some((v) => v.name === violation.name)) {

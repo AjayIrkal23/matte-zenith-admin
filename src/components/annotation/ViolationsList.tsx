@@ -116,7 +116,20 @@ export default function ViolationsList({ violations, annotatedViolations, onAddV
 
                 {isAnnotated && annotatedViolation && (
                   <div className="text-xs text-text-muted">
-                    Box: {Math.round(annotatedViolation.bbox.x * 100)}%, {Math.round(annotatedViolation.bbox.y * 100)}%
+                    Box: {Math.round(annotatedViolation.bbox.x * 100)}%,
+                    {" "}
+                    {Math.round(annotatedViolation.bbox.y * 100)}% ({
+                      Math.round(
+                        annotatedViolation.bbox.width *
+                          annotatedViolation.bbox.imageWidth
+                      )
+                    }
+                    x{
+                      Math.round(
+                        annotatedViolation.bbox.height *
+                          annotatedViolation.bbox.imageHeight
+                      )
+                    })
                   </div>
                 )}
               </div>
