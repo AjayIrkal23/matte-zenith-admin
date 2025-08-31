@@ -83,6 +83,8 @@ export interface IBoundingBox {
   height: number;
   createdAt: string;
   createdBy: string; // empid or user id
+  imageWidth: number;   // original image width in pixels
+  imageHeight: number;  // original image height in pixels
 }
 
 export interface IAnnotatedViolation extends IViolation {

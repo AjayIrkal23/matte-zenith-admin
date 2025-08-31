@@ -4,9 +4,7 @@ import { IImage, IAnnotatedViolation, IBoundingBox } from "@/types/admin";
 interface ImageCanvasProps {
   image: IImage;
   annotations: IAnnotatedViolation[];
-  onBoundingBoxDrawn: (
-    bbox: IBoundingBox & { imageWidth: number; imageHeight: number }
-  ) => void;
+  onBoundingBoxDrawn: (bbox: IBoundingBox) => void;
   disabled?: boolean;
   width: number;
   height: number;
@@ -85,10 +83,7 @@ export default function ImageCanvas({
       drawingState.currentBox.width > 0.02 &&
       drawingState.currentBox.height > 0.02
     ) {
-      const boundingBox: IBoundingBox & {
-        imageWidth: number;
-        imageHeight: number;
-      } = {
+      const boundingBox: IBoundingBox = {
         id: `bbox-${Date.now()}`,
         x: drawingState.currentBox.x,
         y: drawingState.currentBox.y,
