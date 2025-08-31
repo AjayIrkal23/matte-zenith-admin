@@ -7,13 +7,6 @@ interface AdminTopbarProps {
   onToggleSidebar?: () => void;
 }
 
-interface StatCardProps {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-  iconColor: string;
-}
-
 export function AdminTopbar({ onToggleSidebar }: AdminTopbarProps) {
   return (
     <header className="h-20 bg-adani-primary/20  text-white flex-shrink-0">

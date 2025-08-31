@@ -1,13 +1,5 @@
 import { NavLink, useLocation } from "react-router-dom";
-import {
-  Users,
-  Images,
-  Trophy,
-  Building2,
-  BarChart3,
-  PenTool,
-  Shield,
-} from "lucide-react";
+import { Users, Images, Trophy, BarChart3, PenTool } from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Sidebar,

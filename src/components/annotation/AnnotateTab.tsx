@@ -56,16 +56,6 @@ export default function AnnotateTab() {
     }
   }, [currentImageIndex, currentImage]);
 
-  useEffect(() => {
-    if (currentImage?.imageURL) {
-      const img = new Image();
-      img.onload = () => {
-        setCanvasSize({ width: img.naturalWidth, height: img.naturalHeight });
-      };
-      img.src = currentImage.imageURL;
-    }
-  }, [currentImage]);
-
   const handlePrevious = () => {
     if (currentImageIndex > 0) {
       setCurrentImageIndex(currentImageIndex - 1);
