@@ -4,7 +4,9 @@ import { IImage, IAnnotatedViolation, IBoundingBox } from "@/types/admin";
 interface ImageCanvasProps {
   image: IImage;
   annotations: IAnnotatedViolation[];
-  onBoundingBoxDrawn: (bbox: IBoundingBox & { imageWidth: number; imageHeight: number }) => void;
+  onBoundingBoxDrawn: (
+    bbox: IBoundingBox & { imageWidth: number; imageHeight: number }
+  ) => void;
   disabled?: boolean;
 }
 
@@ -29,48 +31,60 @@ export default function ImageCanvas({
     currentBox: null,
   });
 
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    if (disabled) return;
-    
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      if (disabled) return;
 
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-    setDrawingState({
-      isDrawing: true,
-      startX: x,
-      startY: y,
-      currentBox: null,
-    });
-  }, [disabled]);
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
 
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    if (!drawingState.isDrawing || disabled) return;
+      setDrawingState({
+        isDrawing: true,
+        startX: x,
+        startY: y,
+        currentBox: null,
+      });
+    },
+    [disabled]
+  );
 
-    const rect = canvasRef.current?.getBoundingClientRect();
-    if (!rect) return;
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!drawingState.isDrawing || disabled) return;
 
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
+      const rect = canvasRef.current?.getBoundingClientRect();
+      if (!rect) return;
 
-    const box = {
-      x: Math.min(drawingState.startX, x),
-      y: Math.min(drawingState.startY, y),
-      width: Math.abs(x - drawingState.startX),
-      height: Math.abs(y - drawingState.startY),
-    };
+      const x = (e.clientX - rect.left) / rect.width;
+      const y = (e.clientY - rect.top) / rect.height;
 
-    setDrawingState(prev => ({ ...prev, currentBox: box }));
-  }, [drawingState.isDrawing, drawingState.startX, drawingState.startY, disabled]);
+      const box = {
+        x: Math.min(drawingState.startX, x),
+        y: Math.min(drawingState.startY, y),
+        width: Math.abs(x - drawingState.startX),
+        height: Math.abs(y - drawingState.startY),
+      };
+
+      setDrawingState((prev) => ({ ...prev, currentBox: box }));
+    },
+    [drawingState.isDrawing, drawingState.startX, drawingState.startY, disabled]
+  );
 
   const handleMouseUp = useCallback(() => {
     if (!drawingState.isDrawing || !drawingState.currentBox || disabled) return;
 
     // Only create bounding box if it has meaningful size
-    if (drawingState.currentBox.width > 0.02 && drawingState.currentBox.height > 0.02) {
-      const boundingBox: IBoundingBox & { imageWidth: number; imageHeight: number } = {
+    if (
+      drawingState.currentBox.width > 0.02 &&
+      drawingState.currentBox.height > 0.02
+    ) {
+      const boundingBox: IBoundingBox & {
+        imageWidth: number;
+        imageHeight: number;
+      } = {
         id: `bbox-${Date.now()}`,
         x: drawingState.currentBox.x,
         y: drawingState.currentBox.y,
@@ -91,27 +105,37 @@ export default function ImageCanvas({
       startY: 0,
       currentBox: null,
     });
-  }, [drawingState.isDrawing, drawingState.currentBox, disabled, onBoundingBoxDrawn]);
+  }, [
+    drawingState.isDrawing,
+    drawingState.currentBox,
+    disabled,
+    onBoundingBoxDrawn,
+  ]);
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
-      case 'Critical': return 'border-red-500 bg-red-500/20';
-      case 'High': return 'border-orange-500 bg-orange-500/20';
-      case 'Medium': return 'border-yellow-500 bg-yellow-500/20';
-      case 'Low': return 'border-blue-500 bg-blue-500/20';
-      default: return 'border-gray-500 bg-gray-500/20';
+      case "Critical":
+        return "border-red-500 bg-red-500/20";
+      case "High":
+        return "border-orange-500 bg-orange-500/20";
+      case "Medium":
+        return "border-yellow-500 bg-yellow-500/20";
+      case "Low":
+        return "border-blue-500 bg-blue-500/20";
+      default:
+        return "border-gray-500 bg-gray-500/20";
     }
   };
 
-  const CANVAS_WIDTH = 640;  // 20% smaller than 800
-  const CANVAS_HEIGHT = 480; // 20% smaller than 600
+  const CANVAS_WIDTH = 704; // 10% more than 640
+  const CANVAS_HEIGHT = 528; // 10% more than 480
 
   return (
     <div className="relative w-full">
       <div
         ref={canvasRef}
-        className={`relative bg-black rounded-lg overflow-hidden ${
-          disabled ? 'cursor-not-allowed' : 'cursor-crosshair'
+        className={`relative bg-black rounded-lg mx-auto overflow-hidden ${
+          disabled ? "cursor-not-allowed" : "cursor-crosshair"
         }`}
         style={{ width: CANVAS_WIDTH, height: CANVAS_HEIGHT }}
         onMouseDown={handleMouseDown}
@@ -130,7 +154,9 @@ export default function ImageCanvas({
         {annotations.map((annotation) => (
           <div
             key={annotation.bbox.id}
-            className={`absolute border-2 ${getSeverityColor(annotation.severity)} pointer-events-none`}
+            className={`absolute border-2 ${getSeverityColor(
+              annotation.severity
+            )} pointer-events-none`}
             style={{
               left: `${annotation.bbox.x * 100}%`,
               top: `${annotation.bbox.y * 100}%`,
@@ -171,7 +197,9 @@ export default function ImageCanvas({
         {/* Instructions */}
         {!disabled && (
           <div className="absolute bottom-4 left-4 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded-lg px-3 py-2">
-            <p className="text-xs text-text-muted">Draw a bounding box to annotate</p>
+            <p className="text-xs text-text-muted">
+              Draw a bounding box to annotate
+            </p>
           </div>
         )}
       </div>

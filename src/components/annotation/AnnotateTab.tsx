@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
-import { fetchImages, selectImages, selectImagesStatus } from "@/store/slices/imagesSlice";
+import {
+  fetchImages,
+  selectImages,
+  selectImagesStatus,
+} from "@/store/slices/imagesSlice";
 import { submitAnnotatedImage } from "@/store/slices/annotatedImagesSlice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,24 +14,35 @@ import { toast } from "@/hooks/use-toast";
 import ImageCanvas from "./ImageCanvas";
 import ViolationsList from "./ViolationsList";
 import { ViolationPicker } from "@/components/images/ViolationPicker";
-import { IAnnotatedImage, IAnnotatedViolation, IViolation, IBoundingBox } from "@/types/admin";
+import {
+  IAnnotatedImage,
+  IAnnotatedViolation,
+  IViolation,
+  IBoundingBox,
+} from "@/types/admin";
 
 export default function AnnotateTab() {
   const dispatch = useAppDispatch();
   const images = useAppSelector(selectImages);
   const imagesStatus = useAppSelector(selectImagesStatus);
-  
+
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [currentImageViolations, setCurrentImageViolations] = useState<IViolation[]>([]);
-  const [annotatedViolations, setAnnotatedViolations] = useState<IAnnotatedViolation[]>([]);
-  const [pendingBbox, setPendingBbox] = useState<(IBoundingBox & { imageWidth: number; imageHeight: number }) | null>(null);
+  const [currentImageViolations, setCurrentImageViolations] = useState<
+    IViolation[]
+  >([]);
+  const [annotatedViolations, setAnnotatedViolations] = useState<
+    IAnnotatedViolation[]
+  >([]);
+  const [pendingBbox, setPendingBbox] = useState<
+    (IBoundingBox & { imageWidth: number; imageHeight: number }) | null
+  >(null);
   const [showViolationPicker, setShowViolationPicker] = useState(false);
   const [pickerStartInAdd, setPickerStartInAdd] = useState(false);
 
   const currentImage = images[currentImageIndex];
 
   useEffect(() => {
-    if (imagesStatus === 'idle') {
+    if (imagesStatus === "idle") {
       dispatch(fetchImages({ page: 1, pageSize: 100 })); // Load more images for annotation
     }
   }, [imagesStatus, dispatch]);
@@ -62,12 +77,16 @@ export default function AnnotateTab() {
   const handleRemoveViolation = (index: number) => {
     const violation = currentImageViolations[index];
     // Remove from violations list
-    setCurrentImageViolations(prev => prev.filter((_, i) => i !== index));
+    setCurrentImageViolations((prev) => prev.filter((_, i) => i !== index));
     // Remove any associated annotation
-    setAnnotatedViolations(prev => prev.filter(av => av.name !== violation.name));
+    setAnnotatedViolations((prev) =>
+      prev.filter((av) => av.name !== violation.name)
+    );
   };
 
-  const handleBoundingBoxDrawn = (bbox: IBoundingBox & { imageWidth: number; imageHeight: number }) => {
+  const handleBoundingBoxDrawn = (
+    bbox: IBoundingBox & { imageWidth: number; imageHeight: number }
+  ) => {
     setPickerStartInAdd(false);
     setPendingBbox(bbox);
     setShowViolationPicker(true);
@@ -87,9 +106,9 @@ export default function AnnotateTab() {
           createdBy: pendingBbox.createdBy,
         },
       };
-      setAnnotatedViolations(prev => [...prev, annotatedViolation]);
-      if (!currentImageViolations.some(v => v.name === violation.name)) {
-        setCurrentImageViolations(prev => [...prev, violation]);
+      setAnnotatedViolations((prev) => [...prev, annotatedViolation]);
+      if (!currentImageViolations.some((v) => v.name === violation.name)) {
+        setCurrentImageViolations((prev) => [...prev, violation]);
       }
       setPendingBbox(null);
 
@@ -98,7 +117,7 @@ export default function AnnotateTab() {
         description: `${violation.name} has been annotated with bounding box (${pendingBbox.imageWidth}x${pendingBbox.imageHeight})`,
       });
     } else {
-      setCurrentImageViolations(prev => [...prev, violation]);
+      setCurrentImageViolations((prev) => [...prev, violation]);
     }
     setShowViolationPicker(false);
   };
@@ -112,7 +131,7 @@ export default function AnnotateTab() {
       annotatedBy: "current-user", // Replace with actual user ID
       validated: true,
       annotatedViolations,
-      imageWidth: 640,  // Canvas dimensions for backend processing
+      imageWidth: 640, // Canvas dimensions for backend processing
       imageHeight: 480,
     };
 
@@ -122,7 +141,7 @@ export default function AnnotateTab() {
         title: "Success",
         description: "Image annotation submitted successfully",
       });
-      
+
       // Move to next image
       if (currentImageIndex < images.length - 1) {
         handleNext();
@@ -138,14 +157,14 @@ export default function AnnotateTab() {
 
   const checkIfAllViolationsAssigned = () => {
     if (currentImageViolations.length === 0) return false;
-    return currentImageViolations.every(violation => 
-      annotatedViolations.some(av => av.name === violation.name)
+    return currentImageViolations.every((violation) =>
+      annotatedViolations.some((av) => av.name === violation.name)
     );
   };
 
   const isAllAssigned = checkIfAllViolationsAssigned();
 
-  if (imagesStatus === 'loading' || !currentImage) {
+  if (imagesStatus === "loading" || !currentImage) {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center space-y-4">
@@ -171,11 +190,11 @@ export default function AnnotateTab() {
             <ChevronLeft className="w-4 h-4" />
             Previous
           </Button>
-          
+
           <Badge variant="secondary" className="px-3 py-1">
             {currentImageIndex + 1} of {images.length}
           </Badge>
-          
+
           <Button
             variant="outline"
             size="sm"
@@ -190,12 +209,15 @@ export default function AnnotateTab() {
 
         <div className="flex items-center gap-3">
           {isAllAssigned && (
-            <Badge variant="default" className="bg-green-500/20 text-green-300 border-green-500/30">
+            <Badge
+              variant="default"
+              className="bg-green-500/20 text-green-300 border-green-500/30"
+            >
               <CheckCircle className="w-3 h-3 mr-1" />
               All Assigned
             </Badge>
           )}
-          
+
           <Button
             onClick={handleSubmit}
             disabled={!isAllAssigned}
@@ -211,7 +233,11 @@ export default function AnnotateTab() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Image Canvas - 2/3 width */}
         <div className="lg:col-span-2">
-          <Card className={`glass-panel ${isAllAssigned ? 'border-green-500/30 bg-green-500/5' : ''}`}>
+          <Card
+            className={`glass-panel ${
+              isAllAssigned ? "border-green-500/30 bg-green-500/5" : ""
+            }`}
+          >
             <CardContent className="p-0">
               <ImageCanvas
                 image={currentImage}

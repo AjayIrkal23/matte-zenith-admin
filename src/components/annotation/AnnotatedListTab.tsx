@@ -23,6 +23,8 @@ export default function AnnotatedListTab() {
     null
   );
 
+  console.log("Annotated images:", annotatedImages);
+
   useEffect(() => {
     if (status === "idle") {
       dispatch(fetchAnnotatedImages({ page: 1, pageSize: 20 }));
