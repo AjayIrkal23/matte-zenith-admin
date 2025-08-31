@@ -142,8 +142,8 @@ export default function AnnotateTab() {
       annotatedBy: "current-user", // Replace with actual user ID
       validated: true,
       annotatedViolations,
-      imageWidth: 640, // Canvas dimensions for backend processing
-      imageHeight: 480,
+      imageWidth: canvasSize.width,
+      imageHeight: canvasSize.height,
     };
 
     try {
@@ -239,6 +239,10 @@ export default function AnnotateTab() {
           </Button>
         </div>
       </div>
+
+      <p className="text-sm text-text-muted">
+        Image size: {canvasSize.width}x{canvasSize.height}
+      </p>
 
       {/* Main Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
