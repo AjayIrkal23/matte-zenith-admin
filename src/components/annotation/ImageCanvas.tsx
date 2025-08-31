@@ -103,8 +103,8 @@ export default function ImageCanvas({
     }
   };
 
-  const CANVAS_WIDTH = 800;
-  const CANVAS_HEIGHT = 600;
+  const CANVAS_WIDTH = 640;  // 20% smaller than 800
+  const CANVAS_HEIGHT = 480; // 20% smaller than 600
 
   return (
     <div className="relative w-full">

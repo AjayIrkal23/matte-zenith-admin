@@ -97,6 +97,8 @@ export interface IAnnotatedImage extends IImage {
   validated: boolean;        // true when all violations for this image are assigned
   // Replace raw violations with annotated ones specifically for this record:
   annotatedViolations: IAnnotatedViolation[];
+  imageWidth?: number;       // Canvas width for backend bounding box processing
+  imageHeight?: number;      // Canvas height for backend bounding box processing
 }
 
 export interface AnnotatedImagesState {

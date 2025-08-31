@@ -112,6 +112,8 @@ export default function AnnotateTab() {
       annotatedBy: "current-user", // Replace with actual user ID
       validated: true,
       annotatedViolations,
+      imageWidth: 640,  // Canvas dimensions for backend processing
+      imageHeight: 480,
     };
 
     try {
