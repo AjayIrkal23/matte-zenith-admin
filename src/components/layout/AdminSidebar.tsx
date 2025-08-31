@@ -1,5 +1,13 @@
 import { NavLink, useLocation } from "react-router-dom";
-import { Users, Images, Trophy, Building2, BarChart3, PenTool, Shield } from "lucide-react";
+import {
+  Users,
+  Images,
+  Trophy,
+  Building2,
+  BarChart3,
+  PenTool,
+  Shield,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import {
   Sidebar,
@@ -71,19 +79,24 @@ export function AdminSidebar() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="w-8 h-8 bg-adani-primary rounded-2xl flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-white" />
+            {/* Image logo with white background */}
+            <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center overflow-hidden">
+              <img
+                src="/adani.png" // <-- place your logo in /public/images/
+                alt="Adani Logo"
+                className="w-14 h-14 object-contain"
+              />
             </div>
+
             {open && (
               <motion.div
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: "auto" }}
                 transition={{ duration: 0.22, delay: 0.1 }}
               >
-                <h1 className="text-lg font-semibold text-text-primary">
-                  Adani Admin
-                </h1>
-                <p className="text-xs text-text-muted">Safety Dashboard</p>
+                <p className="text-sm text-white font-semibold">
+                  ROKO TOKO ADMIN
+                </p>
               </motion.div>
             )}
           </motion.div>
@@ -109,7 +122,7 @@ export function AdminSidebar() {
                         className={`relative flex items-center gap-3 px-3 h-[40px] py-2.5 rounded-2xl transition-all duration-220 group ${
                           isCurrentActive
                             ? "bg-adani-primary/20 text-adani-primary border-l-2  border-adani-primary shadow-lg"
-                            : "text-text-secondary hover:bg-hover-overlay hover:text-text-primary hover:translate-y-[-2px]"
+                            : "text-text-primary hover:bg-hover-overlay hover:text-text-primary hover:translate-y-[-2px]"
                         } ${!open ? "justify-center" : ""}`}
                       >
                         <item.icon
@@ -175,7 +188,8 @@ export function AdminSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         </SidebarContent>
-        
+
+        {/* Footer with DocketRun logo */}
         {/* Footer with DocketRun logo */}
         <div className="mt-auto border-t border-panel-border p-4">
           <motion.div
@@ -184,13 +198,14 @@ export function AdminSidebar() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="w-6 h-6 bg-adani-primary/20 rounded-full flex items-center justify-center">
-              <Shield className="w-3 h-3 text-adani-primary" />
-            </div>
             {open && (
-              <div>
-                <h3 className="text-xs font-medium text-text-primary">DocketRun</h3>
-                <p className="text-xs text-text-muted">Powered by</p>
+              <div className="flex flex-col justify-center w-full  items-center gap-2">
+                <p className="text-[10px] text-white">Powered by</p>
+                <img
+                  src="/docketrun.png" // <-- put your logo path here
+                  alt="DocketRun Logo"
+                  className="h-5 w-auto"
+                />
               </div>
             )}
           </motion.div>

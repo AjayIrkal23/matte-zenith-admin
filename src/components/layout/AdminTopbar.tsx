@@ -33,25 +33,6 @@ export function AdminTopbar({ onToggleSidebar }: AdminTopbarProps) {
             <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
               <Building2 className="w-4 h-4 text-white" />
             </div>
-            <div>
-              <h2 className="font-semibold text-sm">Adani Group</h2>
-              <p className="text-xs opacity-80">Safety Monitoring</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            className="flex items-center gap-3"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-          >
-            <div className="w-8 h-8 bg-white/20 rounded-lg flex items-center justify-center">
-              <Shield className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <h2 className="font-semibold text-sm">DocketRun</h2>
-              <p className="text-xs opacity-80">Powered by</p>
-            </div>
           </motion.div>
         </div>
       </div>
