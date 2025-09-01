@@ -15,6 +15,12 @@ import TopPerformers from "@/components/leaderboard/TopPerformers";
 import LeaderboardTable from "@/components/leaderboard/LeaderboardTable";
 import RankModal from "@/components/leaderboard/RankModal";
 import CurrentPositionCard from "@/components/leaderboard/CurrentPositionCard";
+import {
+  PageHeaderSkeleton,
+  StatsCardSkeleton,
+  TopPerformersSkeleton,
+  LeaderboardTableSkeleton,
+} from "@/components/ui/skeletons";
 
 export default function LeaderboardPage() {
   const dispatch = useAppDispatch();
@@ -49,6 +55,27 @@ export default function LeaderboardPage() {
 
     return () => clearTimeout(timer);
   }, [allUsers.length, hasShownModal, userRank]);
+
+  if (status === "loading" && allUsers.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="space-y-6"
+      >
+        <PageHeaderSkeleton />
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <StatsCardSkeleton />
+          </div>
+          <StatsCardSkeleton />
+        </div>
+        <TopPerformersSkeleton />
+        <LeaderboardTableSkeleton />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

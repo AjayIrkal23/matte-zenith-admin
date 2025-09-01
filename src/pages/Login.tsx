@@ -16,6 +16,7 @@ import {
   selectIsAuthenticated,
   clearError 
 } from '@/store/slices/authSlice';
+import { FormModalSkeleton } from '@/components/ui/skeletons';
 
 export default function LoginPage() {
   const [empId, setEmpId] = useState('');

@@ -12,6 +12,11 @@ import {
   selectAiHumanDelta,
 } from "@/store/selectors/metricsSelectors";
 import { departmentValidationMetrics } from "@/mocks/departmentMetrics";
+import {
+  KpiCardsSkeleton,
+  ChartSkeleton,
+  TopPerformersSkeleton,
+} from "@/components/ui/skeletons";
 
 const KpiCards = lazy(() => import("@/components/dashboard/KpiCards"));
 const UsersByMonthChart = lazy(() => import("@/components/dashboard/UsersByMonthChart"));
@@ -90,30 +95,30 @@ export default function DashboardPage() {
         <p className="text-text-muted">Overview of safety monitoring activities</p>
       </motion.div>
 
-      <Suspense fallback={<div>Loading KPIs...</div>}>
+      <Suspense fallback={<KpiCardsSkeleton />}>
         <KpiCards data={kpiData} variants={itemVariants} />
       </Suspense>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Suspense fallback={<div>Loading Users by Month...</div>}>
+        <Suspense fallback={<ChartSkeleton />}>
           <UsersByMonthChart data={usersByMonth} variants={itemVariants} />
         </Suspense>
-        <Suspense fallback={<div>Loading Images...</div>}>
+        <Suspense fallback={<ChartSkeleton />}>
           <ImagesTotalsChart data={imagesTotals} variants={itemVariants} />
         </Suspense>
       </div>
 
       <div className="grid grid-cols-1 gap-6">
-        <Suspense fallback={<div>Loading Department Validation...</div>}>
+        <Suspense fallback={<ChartSkeleton />}>
           <DepartmentValidatedChart data={departmentValidationMetrics} variants={itemVariants} />
         </Suspense>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Suspense fallback={<div>Loading Top Performers...</div>}>
+        <Suspense fallback={<div className="lg:col-span-2"><TopPerformersSkeleton /></div>}>
           <TopPerformers data={top3} variants={itemVariants} />
         </Suspense>
-        <Suspense fallback={<div>Loading AI stats...</div>}>
+        <Suspense fallback={<ChartSkeleton />}>
           <AiHumanDeltaCard data={aiHumanDelta} variants={itemVariants} />
         </Suspense>
       </div>

@@ -20,6 +20,12 @@ import { ImageFilters } from "@/components/images/ImageFilters";
 import { ImageStats } from "@/components/images/ImageStats";
 import { countViolationsBySeverity } from "@/components/images/utils";
 import { IImage } from "@/types/admin";
+import {
+  PageHeaderSkeleton,
+  StatsCardSkeleton,
+  FilterSectionSkeleton,
+  ImageGridSkeleton,
+} from "@/components/ui/skeletons";
 
 export default function ImagesPage() {
   const dispatch = useAppDispatch();
@@ -117,6 +123,29 @@ export default function ImagesPage() {
     setDateRange({});
   };
 
+  if (status === "loading" && images.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="space-y-6"
+      >
+        <PageHeaderSkeleton />
+        <StatsCardSkeleton />
+        <FilterSectionSkeleton />
+        <div className="glass-panel p-6">
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="h-6 w-48 bg-hover-overlay/30 rounded animate-pulse shimmer" />
+            </div>
+            <ImageGridSkeleton />
+          </div>
+        </div>
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -169,14 +198,7 @@ export default function ImagesPage() {
         </CardHeader>
         <CardContent>
           {status === "loading" && filteredImages.length === 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {[...Array(8)].map((_, i) => (
-                <div
-                  key={i}
-                  className="aspect-video bg-hover-overlay/30 rounded-lg animate-pulse shimmer"
-                />
-              ))}
-            </div>
+            <ImageGridSkeleton />
           ) : (
             <ImageGrid
               images={filteredImages}

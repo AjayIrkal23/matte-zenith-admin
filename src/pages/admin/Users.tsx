@@ -51,6 +51,11 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { UserFormModal } from "@/components/users/UserFormModal";
 import { IUser } from "@/types/admin";
+import {
+  PageHeaderSkeleton,
+  FilterSectionSkeleton,
+  TableSkeleton,
+} from "@/components/ui/skeletons";
 
 export default function UsersPage() {
   const dispatch = useAppDispatch();
@@ -141,6 +146,21 @@ export default function UsersPage() {
     dispatch(setSearchQuery(""));
   };
 
+  if (status === "loading" && users.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="space-y-6"
+      >
+        <PageHeaderSkeleton />
+        <FilterSectionSkeleton />
+        <TableSkeleton rows={10} />
+      </motion.div>
+    );
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -227,14 +247,7 @@ export default function UsersPage() {
         </CardHeader>
         <CardContent>
           {status === "loading" ? (
-            <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  key={i}
-                  className="h-16 bg-hover-overlay/30 rounded-lg animate-pulse shimmer"
-                />
-              ))}
-            </div>
+            <TableSkeleton rows={5} />
           ) : (
             <div className="overflow-x-auto">
               <Table>

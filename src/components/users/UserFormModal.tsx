@@ -1,4 +1,4 @@
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
@@ -23,6 +23,7 @@ import {
 } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
 import { IUser, UserFormData } from '@/types/admin';
+import { FormModalSkeleton } from '@/components/ui/skeletons';
 
 interface UserFormModalProps {
   isOpen: boolean;
@@ -45,6 +46,7 @@ const selectTriggerClass = 'bg-hover-overlay/30 border-panel-border focus:border
 export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const dispatch = useAppDispatch();
   const isEditing = !!user;
+  const [isFormLoading, setIsFormLoading] = useState(false);
 
   const {
     register,
@@ -58,18 +60,26 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const watchedDepartment = watch('department');
 
   useEffect(() => {
-    if (user) {
-      reset({
-        name: user.name,
-        email: user.email,
-        empid: user.empid,
-        department: user.department,
-        validatedImages: user.validatedImages,
-      });
-    } else {
-      reset();
+    if (isOpen) {
+      setIsFormLoading(true);
+      // Simulate loading delay for form initialization
+      const timer = setTimeout(() => {
+        if (user) {
+          reset({
+            name: user.name,
+            email: user.email,
+            empid: user.empid,
+            department: user.department,
+            validatedImages: user.validatedImages,
+          });
+        } else {
+          reset();
+        }
+        setIsFormLoading(false);
+      }, 300);
+      return () => clearTimeout(timer);
     }
-  }, [user, reset]);
+  }, [user, reset, isOpen]);
 
   const onSubmit = useCallback(async (data: UserFormData) => {
     try {
@@ -112,137 +122,148 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
         </DialogHeader>
 
         <AnimatePresence>
-          <motion.form
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.2 }}
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6 mt-4"
-          >
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-text-primary text-sm font-medium">
-                  Full Name
-                </Label>
-                <Input
-                  id="name"
-                  {...register('name', { required: 'Name is required' })}
-                  className={inputClass}
-                  placeholder="Enter full name"
-                />
-                {errors.name && (
-                  <p className="text-red-400 text-sm">{errors.name.message}</p>
-                )}
+          {isFormLoading ? (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <FormModalSkeleton />
+            </motion.div>
+          ) : (
+            <motion.form
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.2 }}
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6 mt-4"
+            >
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name" className="text-text-primary text-sm font-medium">
+                    Full Name
+                  </Label>
+                  <Input
+                    id="name"
+                    {...register('name', { required: 'Name is required' })}
+                    className={inputClass}
+                    placeholder="Enter full name"
+                  />
+                  {errors.name && (
+                    <p className="text-red-400 text-sm">{errors.name.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="empid" className="text-text-primary text-sm font-medium">
+                    Employee ID
+                  </Label>
+                  <Input
+                    id="empid"
+                    {...register('empid', { required: 'Employee ID is required' })}
+                    className={inputClass}
+                    placeholder="EMP001"
+                  />
+                  {errors.empid && (
+                    <p className="text-red-400 text-sm">{errors.empid.message}</p>
+                  )}
+                </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="empid" className="text-text-primary text-sm font-medium">
-                  Employee ID
+                <Label htmlFor="email" className="text-text-primary text-sm font-medium">
+                  Email Address
                 </Label>
                 <Input
-                  id="empid"
-                  {...register('empid', { required: 'Employee ID is required' })}
-                  className={inputClass}
-                  placeholder="EMP001"
-                />
-                {errors.empid && (
-                  <p className="text-red-400 text-sm">{errors.empid.message}</p>
-                )}
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-text-primary text-sm font-medium">
-                Email Address
-              </Label>
-              <Input
-                id="email"
-                type="email"
-                {...register('email', { 
-                  required: 'Email is required',
-                  pattern: {
-                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                    message: 'Invalid email address'
-                  }
-                })}
-                className={inputClass}
-                placeholder="user@adani.com"
-              />
-              {errors.email && (
-                <p className="text-red-400 text-sm">{errors.email.message}</p>
-              )}
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label className="text-text-primary text-sm font-medium">
-                  Department
-                </Label>
-                <Select
-                  value={watchedDepartment}
-                  onValueChange={(value) => setValue('department', value)}
-                >
-                  <SelectTrigger className={selectTriggerClass}>
-                    <SelectValue placeholder="Select department" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-panel-bg border-panel-border">
-                    {departments.map((dept) => (
-                      <SelectItem key={dept} value={dept} className="text-text-primary hover:bg-hover-overlay">
-                        {dept}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {errors.department && (
-                  <p className="text-red-400 text-sm">{errors.department.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="validatedImages" className="text-text-primary text-sm font-medium">
-                  Validated Images
-                </Label>
-                <Input
-                  id="validatedImages"
-                  type="number"
-                  min="0"
-                  {...register('validatedImages', { 
-                    required: 'Validated images count is required',
-                    valueAsNumber: true,
-                    min: { value: 0, message: 'Must be a positive number' }
+                  id="email"
+                  type="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: 'Invalid email address'
+                    }
                   })}
                   className={inputClass}
-                  placeholder="0"
+                  placeholder="user@adani.com"
                 />
-                {errors.validatedImages && (
-                  <p className="text-red-400 text-sm">{errors.validatedImages.message}</p>
+                {errors.email && (
+                  <p className="text-red-400 text-sm">{errors.email.message}</p>
                 )}
               </div>
-            </div>
 
-            <div className="flex justify-end gap-3 pt-4">
-              <Button 
-                type="button" 
-                variant="outline" 
-                onClick={onClose}
-                className="btn-secondary"
-                disabled={isSubmitting}
-              >
-                Cancel
-              </Button>
-              <Button 
-                type="submit" 
-                className="btn-adani"
-                disabled={isSubmitting}
-              >
-                {isSubmitting 
-                  ? (isEditing ? 'Updating...' : 'Creating...') 
-                  : (isEditing ? 'Update User' : 'Create User')
-                }
-              </Button>
-            </div>
-          </motion.form>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-text-primary text-sm font-medium">
+                    Department
+                  </Label>
+                  <Select
+                    value={watchedDepartment}
+                    onValueChange={(value) => setValue('department', value)}
+                  >
+                    <SelectTrigger className={selectTriggerClass}>
+                      <SelectValue placeholder="Select department" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-panel-bg border-panel-border">
+                      {departments.map((dept) => (
+                        <SelectItem key={dept} value={dept} className="text-text-primary hover:bg-hover-overlay">
+                          {dept}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {errors.department && (
+                    <p className="text-red-400 text-sm">{errors.department.message}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="validatedImages" className="text-text-primary text-sm font-medium">
+                    Validated Images
+                  </Label>
+                  <Input
+                    id="validatedImages"
+                    type="number"
+                    min="0"
+                    {...register('validatedImages', {
+                      required: 'Validated images count is required',
+                      valueAsNumber: true,
+                      min: { value: 0, message: 'Must be a positive number' }
+                    })}
+                    className={inputClass}
+                    placeholder="0"
+                  />
+                  {errors.validatedImages && (
+                    <p className="text-red-400 text-sm">{errors.validatedImages.message}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onClose}
+                  className="btn-secondary"
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="btn-adani"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting
+                    ? (isEditing ? 'Updating...' : 'Creating...')
+                    : (isEditing ? 'Update User' : 'Create User')
+                  }
+                </Button>
+              </div>
+            </motion.form>
+          )}
         </AnimatePresence>
       </DialogContent>
     </Dialog>
