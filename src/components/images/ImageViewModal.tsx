@@ -102,7 +102,7 @@ export function ImageViewModal({
                   key={currentImage.id}
                   src={currentImage.imageURL}
                   alt={currentImage.name}
-                  className=" object-cover rounded-lg shadow-lg"
+                  className="w-full h-full object-contain rounded-lg shadow-lg"
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}

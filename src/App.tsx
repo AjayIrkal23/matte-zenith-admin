@@ -12,6 +12,7 @@ import UsersPage from "@/pages/admin/Users";
 import ImagesPage from "@/pages/admin/Images";
 import LeaderboardPage from "@/pages/admin/Leaderboard";
 import AnnotationPage from "@/pages/admin/Annotation";
+import DepartmentsPage from "@/pages/admin/Departments";
 import NotFound from "./pages/NotFound";
 
 const App = () => (
@@ -67,6 +68,13 @@ const App = () => (
             <ProtectedRoute>
               <AdminLayout>
                 <AnnotationPage />
+              </AdminLayout>
+            </ProtectedRoute>
+          } />
+          <Route path="/admin/departments" element={
+            <ProtectedRoute>
+              <AdminLayout>
+                <DepartmentsPage />
               </AdminLayout>
             </ProtectedRoute>
           } />

@@ -14,6 +14,7 @@ import LeaderboardStats from "@/components/leaderboard/LeaderboardStats";
 import TopPerformers from "@/components/leaderboard/TopPerformers";
 import LeaderboardTable from "@/components/leaderboard/LeaderboardTable";
 import RankModal from "@/components/leaderboard/RankModal";
+import CurrentPositionCard from "@/components/leaderboard/CurrentPositionCard";
 
 export default function LeaderboardPage() {
   const dispatch = useAppDispatch();
@@ -65,10 +66,20 @@ export default function LeaderboardPage() {
         </div>
       </div>
 
-      <LeaderboardStats
-        totalUsers={allUsers.length}
-        totalValidatedImages={totalValidatedImages}
-      />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <LeaderboardStats
+            totalUsers={allUsers.length}
+            totalValidatedImages={totalValidatedImages}
+          />
+        </div>
+        <CurrentPositionCard
+          userRank={userRank ?? 3}
+          userName="Rajesh Kumar"
+          totalUsers={allUsers.length}
+          validatedImages={245} // Mock validated images for current user
+        />
+      </div>
 
       {top3.length > 0 && <TopPerformers top3={top3} status={status} />}
 

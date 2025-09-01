@@ -11,10 +11,12 @@ import {
   selectImagesTotalsByMonth,
   selectAiHumanDelta,
 } from "@/store/selectors/metricsSelectors";
+import { departmentValidationMetrics } from "@/mocks/departmentMetrics";
 
 const KpiCards = lazy(() => import("@/components/dashboard/KpiCards"));
 const UsersByMonthChart = lazy(() => import("@/components/dashboard/UsersByMonthChart"));
 const ImagesTotalsChart = lazy(() => import("@/components/dashboard/ImagesTotalsChart"));
+const DepartmentValidatedChart = lazy(() => import("@/components/dashboard/DepartmentValidatedChart"));
 const TopPerformers = lazy(() => import("@/components/dashboard/TopPerformers"));
 const AiHumanDeltaCard = lazy(() => import("@/components/dashboard/AiHumanDeltaCard"));
 
@@ -98,6 +100,12 @@ export default function DashboardPage() {
         </Suspense>
         <Suspense fallback={<div>Loading Images...</div>}>
           <ImagesTotalsChart data={imagesTotals} variants={itemVariants} />
+        </Suspense>
+      </div>
+
+      <div className="grid grid-cols-1 gap-6">
+        <Suspense fallback={<div>Loading Department Validation...</div>}>
+          <DepartmentValidatedChart data={departmentValidationMetrics} variants={itemVariants} />
         </Suspense>
       </div>
 
