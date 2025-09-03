@@ -31,7 +31,7 @@ export interface IImage {
 }
 
 // Redux state types
-export type AsyncStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
+export type AsyncStatus = "idle" | "loading" | "succeeded" | "failed";
 
 export interface UsersState {
   items: IUser[];
@@ -77,30 +77,29 @@ export interface UserFormData {
 // New for annotation
 export interface IBoundingBox {
   id: string;
-  x: number;  // normalized [0..1]
+  x: number; // normalized [0..1]
   y: number;
   width: number;
   height: number;
   createdAt: string;
   createdBy: string; // empid or user id
-  imageWidth: number;   // original image width in pixels
-  imageHeight: number;  // original image height in pixels
+  imageWidth: number; // original image width in pixels
+  imageHeight: number; // original image height in pixels
 }
 
 export interface IAnnotatedViolation extends IViolation {
-  bbox: IBoundingBox;        // the drawn box for this violation
-  notes?: string;            // optional analyst note
-  isNew?: boolean;           // true if user created a brand-new violation label
+  bbox: IBoundingBox; // the drawn box for this violation
+  notes?: string; // optional analyst note
+  isNew?: boolean; // true if user created a brand-new violation label
 }
 
 export interface IAnnotatedImage extends IImage {
   annotatedAt: string;
-  annotatedBy: string;       // empid or user id
-  validated: boolean;        // true when all violations for this image are assigned
-  // Replace raw violations with annotated ones specifically for this record:
+  annotatedBy: string; // empid or user id
+  validated: boolean; // true when all violations for this image are assigned
   annotatedViolations: IAnnotatedViolation[];
-  imageWidth?: number;       // Canvas width for backend bounding box processing
-  imageHeight?: number;      // Canvas height for backend bounding box processing
+  imageWidth?: number; // Canvas width for backend bounding box processing
+  imageHeight?: number; // Canvas height for backend bounding box processing
 }
 
 export interface AnnotatedImagesState {
