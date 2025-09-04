@@ -264,6 +264,9 @@ export default function UsersPage() {
                     <TableHead className="text-text-muted text-center">
                       Validated Images
                     </TableHead>
+                    <TableHead className="text-text-muted text-center">
+                      Score
+                    </TableHead>
                     <TableHead className="text-text-muted text-right">
                       Actions
                     </TableHead>
@@ -302,6 +305,11 @@ export default function UsersPage() {
                       <TableCell className="text-center">
                         <span className="font-semibold text-adani-primary">
                           {user.validatedImages}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <span className="font-semibold text-green-400">
+                          {user.score || 0}
                         </span>
                       </TableCell>
                       <TableCell className="text-right">

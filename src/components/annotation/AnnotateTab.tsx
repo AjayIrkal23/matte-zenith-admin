@@ -31,9 +31,14 @@ import {
 
 export default function AnnotateTab() {
   const dispatch = useAppDispatch();
-  const images = useAppSelector(selectImages);
+  const allImages = useAppSelector(selectImages);
   const imagesStatus = useAppSelector(selectImagesStatus);
 
+  // Filter images to only show AI validated ones
+  const aiValidatedImages = allImages.filter(image => image.aivalidated === true);
+  
+  // Batch management state
+  const [currentBatch, setCurrentBatch] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [currentImageViolations, setCurrentImageViolations] = useState<
     IViolation[]
@@ -47,17 +52,29 @@ export default function AnnotateTab() {
   const [canvasSize, setCanvasSize] = useState({ width: 704, height: 528 });
   const [zoom, setZoom] = useState(1);
 
+  // Constants for batching
+  const BATCH_SIZE = 10;
+  const startIndex = currentBatch * BATCH_SIZE;
+  const endIndex = Math.min(startIndex + BATCH_SIZE, aiValidatedImages.length);
+  const currentBatchImages = aiValidatedImages.slice(startIndex, endIndex);
+  const totalBatches = Math.ceil(aiValidatedImages.length / BATCH_SIZE);
+
   const handleZoomIn = () => setZoom((prev) => Math.min(prev + 0.25, 3));
   const handleZoomOut = () => setZoom((prev) => Math.max(prev - 0.25, 0.5));
   const handleResetZoom = () => setZoom(1);
 
-  const currentImage = images[currentImageIndex];
+  const currentImage = currentBatchImages[currentImageIndex];
 
   useEffect(() => {
     if (imagesStatus === "idle") {
       dispatch(fetchImages({ page: 1, pageSize: 100 })); // Load more images for annotation
     }
   }, [imagesStatus, dispatch]);
+
+  // Reset current image index when batch changes
+  useEffect(() => {
+    setCurrentImageIndex(0);
+  }, [currentBatch]);
 
   useEffect(() => {
     // Reset annotations and violations when switching images
@@ -76,8 +93,20 @@ export default function AnnotateTab() {
   };
 
   const handleNext = () => {
-    if (currentImageIndex < images.length - 1) {
+    if (currentImageIndex < currentBatchImages.length - 1) {
       setCurrentImageIndex(currentImageIndex + 1);
+    }
+  };
+
+  const handleNextBatch = () => {
+    if (currentBatch < totalBatches - 1) {
+      setCurrentBatch(currentBatch + 1);
+    }
+  };
+
+  const handlePreviousBatch = () => {
+    if (currentBatch > 0) {
+      setCurrentBatch(currentBatch - 1);
     }
   };
 
@@ -145,9 +174,11 @@ export default function AnnotateTab() {
         description: "Image annotation submitted successfully",
       });
 
-      // Move to next image
-      if (currentImageIndex < images.length - 1) {
+      // Move to next image or batch
+      if (currentImageIndex < currentBatchImages.length - 1) {
         handleNext();
+      } else if (currentBatch < totalBatches - 1) {
+        handleNextBatch();
       }
     } catch (error) {
       toast({
@@ -194,20 +225,49 @@ export default function AnnotateTab() {
             Previous
           </Button>
 
-          <Badge variant="secondary" className="px-3 py-1">
-            {currentImageIndex + 1} of {images.length}
-          </Badge>
+          <div className="flex flex-col items-center gap-1">
+            <Badge variant="secondary" className="px-3 py-1">
+              {currentImageIndex + 1} of {currentBatchImages.length}
+            </Badge>
+            <Badge variant="outline" className="px-2 py-0.5 text-xs">
+              Batch {currentBatch + 1} of {totalBatches}
+            </Badge>
+          </div>
 
           <Button
             variant="outline"
             size="sm"
             onClick={handleNext}
-            disabled={currentImageIndex === images.length - 1}
+            disabled={currentImageIndex === currentBatchImages.length - 1}
             className="btn-secondary"
           >
             Next
             <ChevronRight className="w-4 h-4" />
           </Button>
+
+          {currentImageIndex === currentBatchImages.length - 1 && currentBatch < totalBatches - 1 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleNextBatch}
+              className="btn-adani"
+            >
+              Next Batch
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          )}
+
+          {currentBatch > 0 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handlePreviousBatch}
+              className="btn-secondary"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Previous Batch
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-3">
