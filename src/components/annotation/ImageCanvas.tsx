@@ -19,6 +19,30 @@ interface DrawingState {
   currentBox: { x: number; y: number; width: number; height: number } | null;
 }
 
+// Helper function to get coordinates from mouse or touch events
+const getEventCoordinates = (
+  e: React.MouseEvent | React.TouchEvent,
+  rect: DOMRect
+): { x: number; y: number } => {
+  let clientX: number, clientY: number;
+
+  if ('touches' in e) {
+    // Touch event
+    const touch = e.touches[0] || e.changedTouches[0];
+    clientX = touch.clientX;
+    clientY = touch.clientY;
+  } else {
+    // Mouse event
+    clientX = e.clientX;
+    clientY = e.clientY;
+  }
+
+  return {
+    x: (clientX - rect.left) / rect.width,
+    y: (clientY - rect.top) / rect.height,
+  };
+};
+
 export default function ImageCanvas({
   image,
   annotations,
@@ -36,15 +60,19 @@ export default function ImageCanvas({
     currentBox: null,
   });
 
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent) => {
+  const handleStart = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
       if (disabled) return;
 
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
+      // Prevent default touch behavior (scrolling, zooming)
+      if ('touches' in e) {
+        e.preventDefault();
+      }
+
+      const { x, y } = getEventCoordinates(e, rect);
 
       setDrawingState({
         isDrawing: true,
@@ -56,15 +84,19 @@ export default function ImageCanvas({
     [disabled]
   );
 
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
+  const handleMove = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
       if (!drawingState.isDrawing || disabled) return;
 
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
 
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = (e.clientY - rect.top) / rect.height;
+      // Prevent default touch behavior
+      if ('touches' in e) {
+        e.preventDefault();
+      }
+
+      const { x, y } = getEventCoordinates(e, rect);
 
       const box = {
         x: Math.min(drawingState.startX, x),
@@ -78,41 +110,51 @@ export default function ImageCanvas({
     [drawingState.isDrawing, drawingState.startX, drawingState.startY, disabled]
   );
 
-  const handleMouseUp = useCallback(() => {
-    if (!drawingState.isDrawing || !drawingState.currentBox || disabled) return;
+  const handleEnd = useCallback(
+    (e: React.MouseEvent | React.TouchEvent) => {
+      if (!drawingState.isDrawing || !drawingState.currentBox || disabled) return;
 
-    // Only create bounding box if it has meaningful size
-    if (
-      drawingState.currentBox.width > 0.02 &&
-      drawingState.currentBox.height > 0.02
-    ) {
-      const boundingBox: IBoundingBox = {
-        id: `bbox-${Date.now()}`,
-        x: drawingState.currentBox.x,
-        y: drawingState.currentBox.y,
-        width: drawingState.currentBox.width,
-        height: drawingState.currentBox.height,
-        createdAt: new Date().toISOString(),
-        createdBy: "current-user", // Replace with actual user ID
-        imageWidth: width,
-        imageHeight: height,
-      };
+      // Prevent default touch behavior
+      if ('touches' in e || 'changedTouches' in e) {
+        e.preventDefault();
+      }
 
-      onBoundingBoxDrawn(boundingBox);
-    }
+      // Only create bounding box if it has meaningful size
+      if (
+        drawingState.currentBox.width > 0.02 &&
+        drawingState.currentBox.height > 0.02
+      ) {
+        const boundingBox: IBoundingBox = {
+          id: `bbox-${Date.now()}`,
+          x: drawingState.currentBox.x,
+          y: drawingState.currentBox.y,
+          width: drawingState.currentBox.width,
+          height: drawingState.currentBox.height,
+          createdAt: new Date().toISOString(),
+          createdBy: "current-user", // Replace with actual user ID
+          imageWidth: width,
+          imageHeight: height,
+        };
 
-    setDrawingState({
-      isDrawing: false,
-      startX: 0,
-      startY: 0,
-      currentBox: null,
-    });
-  }, [
-    drawingState.isDrawing,
-    drawingState.currentBox,
-    disabled,
-    onBoundingBoxDrawn,
-  ]);
+        onBoundingBoxDrawn(boundingBox);
+      }
+
+      setDrawingState({
+        isDrawing: false,
+        startX: 0,
+        startY: 0,
+        currentBox: null,
+      });
+    },
+    [
+      drawingState.isDrawing,
+      drawingState.currentBox,
+      disabled,
+      onBoundingBoxDrawn,
+      width,
+      height,
+    ]
+  );
 
   const getSeverityColor = (severity: string) => {
     switch (severity) {
@@ -136,10 +178,17 @@ export default function ImageCanvas({
         className={`relative bg-black rounded-lg mx-auto overflow-hidden ${
           disabled ? "cursor-not-allowed" : "cursor-crosshair"
         }`}
-        style={{ width: width * zoom, height: height * zoom }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
+        onMouseDown={handleStart}
+        onMouseMove={handleMove}
+        onMouseUp={handleEnd}
+        onTouchStart={handleStart}
+        onTouchMove={handleMove}
+        onTouchEnd={handleEnd}
+        style={{ 
+          width: width * zoom, 
+          height: height * zoom,
+          touchAction: 'none' // Prevent default touch behaviors like scrolling
+        }}
       >
         {/* Image */}
         <img
@@ -197,7 +246,7 @@ export default function ImageCanvas({
         {!disabled && (
           <div className="absolute bottom-4 left-4 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded-lg px-3 py-2">
             <p className="text-xs text-text-muted">
-              Draw a bounding box to annotate
+              Draw a bounding box to annotate (mouse or touch)
             </p>
           </div>
         )}
