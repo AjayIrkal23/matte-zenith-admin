@@ -67,6 +67,7 @@ export const uploadZip = createAsyncThunk(
             violations: [],
             uploadedAt: new Date().toISOString(),
             fileSize: blob.size,
+            aivalidated: false,
           };
           
           return image;

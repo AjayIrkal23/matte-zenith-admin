@@ -12,7 +12,8 @@
       }
     ],
     "uploadedAt": "2024-01-28T09:30:00Z",
-    "fileSize": 245760
+    "fileSize": 245760,
+    "aivalidated": true
   },
   {
     "id": "img_002",
@@ -32,7 +33,8 @@
       }
     ],
     "uploadedAt": "2024-01-28T10:15:00Z",
-    "fileSize": 189440
+    "fileSize": 189440,
+    "aivalidated": true
   },
   {
     "id": "img_003",
@@ -47,7 +49,8 @@
       }
     ],
     "uploadedAt": "2024-01-28T11:45:00Z",
-    "fileSize": 312320
+    "fileSize": 312320,
+    "aivalidated": false
   },
   {
     "id": "img_004",

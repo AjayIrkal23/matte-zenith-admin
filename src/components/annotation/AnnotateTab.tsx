@@ -198,12 +198,48 @@ export default function AnnotateTab() {
 
   const isAllAssigned = checkIfAllViolationsAssigned();
 
-  if (imagesStatus === "loading" || !currentImage) {
+  if (imagesStatus === "loading") {
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center space-y-4">
           <div className="w-8 h-8 border-2 border-adani-primary border-t-transparent rounded-full animate-spin mx-auto" />
           <p className="text-text-muted">Loading images...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (aiValidatedImages.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-panel-bg border-2 border-panel-border rounded-full flex items-center justify-center mx-auto">
+            <span className="text-2xl">🤖</span>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-text-primary mb-2">No AI Validated Images</h3>
+            <p className="text-text-muted">
+              There are no AI validated images available for annotation yet.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentImage) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center space-y-4">
+          <div className="w-16 h-16 bg-panel-bg border-2 border-panel-border rounded-full flex items-center justify-center mx-auto">
+            <span className="text-2xl">📋</span>
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-text-primary mb-2">Batch Complete</h3>
+            <p className="text-text-muted">
+              All images in this batch have been processed.
+            </p>
+          </div>
         </div>
       </div>
     );
