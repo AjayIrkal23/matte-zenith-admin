@@ -100,6 +100,7 @@ export interface IAnnotatedImage extends IImage {
   annotatedViolations: IAnnotatedViolation[];
   imageWidth?: number; // Canvas width for backend bounding box processing
   imageHeight?: number; // Canvas height for backend bounding box processing
+  usersValidated: string[]; // Array of user IDs who have validated this image
 }
 
 export interface AnnotatedImagesState {

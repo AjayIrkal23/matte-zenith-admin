@@ -135,6 +135,7 @@ export default function AnnotateTab() {
       annotatedViolations,
       imageWidth: canvasSize.width,
       imageHeight: canvasSize.height,
+      usersValidated: [], // Empty array, will be updated in backend when users play
     };
 
     try {
