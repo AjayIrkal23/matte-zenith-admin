@@ -34,17 +34,11 @@ export default function AnnotateTab() {
   const allImages = useAppSelector(selectAnnotationCandidates);
   const imagesStatus = useAppSelector(selectAnnotationCandidatesStatus);
 
-<<<<<<< HEAD
   // Filter images to only show AI validated ones
   const aiValidatedImages = allImages.filter(
     (image) => image.aivalidated === true
   );
 
-=======
-  // Candidates from backend are already filtered to AI validated images
-  const aiValidatedImages = allImages;
-  
->>>>>>> 07c8928a66b3ebb7d0462c9eb43298e03eccaad7
   // Batch management state
   const [currentBatch, setCurrentBatch] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -76,7 +70,11 @@ export default function AnnotateTab() {
   useEffect(() => {
     if (imagesStatus === "idle") {
       dispatch(
-        fetchAnnotationCandidates({ page: 1, pageSize: 100, onlyValidated: true })
+        fetchAnnotationCandidates({
+          page: 1,
+          pageSize: 100,
+          onlyValidated: true,
+        })
       );
     }
   }, [imagesStatus, dispatch]);
