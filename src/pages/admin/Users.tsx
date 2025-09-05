@@ -12,8 +12,6 @@ import {
 } from "@/store/slices/usersSlice";
 import {
   setSelectedDepartment,
-  setValidatedImagesRange,
-  setSearchQuery,
   selectSelectedDepartment,
   selectValidatedImagesRange,
   selectUsersSearchQuery,
@@ -224,7 +222,6 @@ export default function UsersPage() {
                 ))}
               </SelectContent>
             </Select>
-
 
             <Button
               variant="outline"

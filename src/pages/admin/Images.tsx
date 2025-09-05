@@ -35,6 +35,8 @@ export default function ImagesPage() {
   const pagination = useAppSelector(selectImagesPagination);
   const uploadProgress = useAppSelector(selectUploadProgress);
 
+  console.log(images);
+
   const [selectedSeverities, setSelectedSeverities] = useState<string[]>([]);
   const [dateRange, setDateRange] = useState<{ from?: Date; to?: Date }>({});
 
@@ -59,18 +61,23 @@ export default function ImagesPage() {
     }
   }, [error]);
 
-  const severityOptions = useMemo(() => ["Critical", "High", "Medium", "Low"], []);
+  const severityOptions = useMemo(
+    () => ["Critical", "High", "Medium", "Low"],
+    []
+  );
 
   const filteredImages = useMemo(() => {
     return images.filter((image) => {
       if (selectedSeverities.length > 0) {
-        const hasMatchingSeverity = image.violations.some((v) =>
+        const hasMatchingSeverity = image.violations?.some((v) =>
           selectedSeverities.includes(v.severity)
         );
         if (!hasMatchingSeverity) return false;
       }
       if (dateRange.from || dateRange.to) {
+        if (!image.uploadedAt) return false; // guard
         const imageDate = new Date(image.uploadedAt);
+        if (Number.isNaN(imageDate.getTime())) return false;
         if (dateRange.from && imageDate < dateRange.from) return false;
         if (dateRange.to && imageDate > dateRange.to) return false;
       }
@@ -78,10 +85,9 @@ export default function ImagesPage() {
     });
   }, [images, selectedSeverities, dateRange]);
 
-  const violationStats = useMemo(
-    () => countViolationsBySeverity(images),
-    [images]
-  );
+  const violationStats = useMemo(() => countViolationsBySeverity(images), [
+    images,
+  ]);
 
   const handleZipUpload = useCallback(
     async (file: File) => {
@@ -109,8 +115,9 @@ export default function ImagesPage() {
   };
 
   const handleViewImage = (image: IImage) => {
-    const imageIndex = filteredImages.findIndex((img) => img.id === image.id);
-    setCurrentImageIndex(imageIndex);
+    // 🔧 use _id, not id
+    const imageIndex = filteredImages.findIndex((img) => img._id === image._id);
+    setCurrentImageIndex(imageIndex >= 0 ? imageIndex : 0);
     setIsViewModalOpen(true);
   };
 

@@ -1,13 +1,16 @@
-import { Card, CardContent } from '@/components/ui/card';
-import { Calendar, FileImage, Folder } from 'lucide-react';
-import { IImage } from '@/types/admin';
-import { formatDate, formatFileSize } from './utils';
+import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, FileImage, Folder } from "lucide-react";
+import { IImage } from "@/types/admin";
+import { formatDate, formatFileSize } from "./utils";
 
 interface ImageInfoCardProps {
   image: IImage;
 }
 
 export function ImageInfoCard({ image }: ImageInfoCardProps) {
+  // Normalize any Windows-style backslashes to forward slashes
+  const normalizedPath = image.imagePath?.replace(/\\/g, "/");
+
   return (
     <Card className="glass-panel">
       <CardContent className="p-4 space-y-3">
@@ -15,8 +18,8 @@ export function ImageInfoCard({ image }: ImageInfoCardProps) {
           <Folder className="w-4 h-4 text-text-muted" />
           <span className="text-text-muted">Path:</span>
         </div>
-        <code className="text-xs bg-hover-overlay/50 px-2 py-1 rounded block text-adani-primary font-mono">
-          {image.imagePath}
+        <code className="text-xs bg-hover-overlay/50 px-2 py-1 rounded block text-adani-primary font-mono break-all">
+          {normalizedPath}
         </code>
 
         {image.uploadedAt && (
@@ -27,11 +30,11 @@ export function ImageInfoCard({ image }: ImageInfoCardProps) {
             </div>
             <p className="text-sm text-text-secondary">
               {formatDate(image.uploadedAt, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
               })}
             </p>
           </>

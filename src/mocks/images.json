@@ -1,6 +1,6 @@
 [
   {
-    "id": "img_001",
+    "_id": "img_001",
     "name": "site_safety_check_001.jpg",
     "imageURL": "https://images.unsplash.com/photo-1581094794329-c8112a89af12?w=400&h=300&fit=crop",
     "imagePath": "safety_inspections/site_safety_check_001.jpg",
@@ -16,7 +16,7 @@
     "aivalidated": true
   },
   {
-    "id": "img_002",
+    "_id": "img_002",
     "name": "equipment_maintenance_002.jpg",
     "imageURL": "https://images.unsplash.com/photo-1581094651181-2b2d0b749978?w=400&h=300&fit=crop",
     "imagePath": "maintenance/equipment_maintenance_002.jpg",
@@ -37,7 +37,7 @@
     "aivalidated": true
   },
   {
-    "id": "img_003",
+    "_id": "img_003",
     "name": "parking_area_003.jpg",
     "imageURL": "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=400&h=300&fit=crop",
     "imagePath": "parking/parking_area_003.jpg",
@@ -53,7 +53,7 @@
     "aivalidated": false
   },
   {
-    "id": "img_004",
+    "_id": "img_004",
     "name": "work_zone_safety_004.jpg",
     "imageURL": "https://images.unsplash.com/photo-1581094289569-981a0673b6ac?w=400&h=300&fit=crop",
     "imagePath": "safety_inspections/work_zone_safety_004.jpg",
@@ -73,7 +73,7 @@
     "fileSize": 278912
   },
   {
-    "id": "img_005",
+    "_id": "img_005",
     "name": "dust_control_005.jpg",
     "imageURL": "https://images.unsplash.com/photo-1581094794329-e7b6c1c1c7a5?w=400&h=300&fit=crop",
     "imagePath": "environmental/dust_control_005.jpg",
@@ -88,7 +88,7 @@
     "fileSize": 156672
   },
   {
-    "id": "img_006",
+    "_id": "img_006",
     "name": "vehicle_inspection_006.jpg",
     "imageURL": "https://images.unsplash.com/photo-1581094804292-8c48b8c8b8b8?w=400&h=300&fit=crop",
     "imagePath": "vehicles/vehicle_inspection_006.jpg",

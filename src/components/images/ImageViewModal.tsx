@@ -22,7 +22,10 @@ export function ImageViewModal({
   currentIndex,
   onNavigate,
 }: ImageViewModalProps) {
-  const currentImage = useMemo(() => images[currentIndex], [images, currentIndex]);
+  const currentImage = useMemo(() => images[currentIndex], [
+    images,
+    currentIndex,
+  ]);
 
   const handlePrevious = useCallback(() => {
     const prevIndex = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
@@ -62,20 +65,21 @@ export function ImageViewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-6xl w-full max-h-[90vh] p-0 bg-panel-bg border-panel-border overflow-hidden">
+      {/* definite height so inner flex can size */}
+      <DialogContent className="max-w-6xl w-full h-[90vh] p-0 bg-panel-bg border-panel-border overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.2 }}
-          className="flex flex-col h-full"
+          className="flex flex-col h-full min-h-0"
         >
           {/* Header */}
           <div className="flex items-center justify-between p-4 border-b border-panel-border">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 min-w-0">
               <FileImage className="w-5 h-5 text-adani-primary" />
-              <div>
-                <h2 className="font-semibold text-text-primary">
+              <div className="min-w-0">
+                <h2 className="font-semibold text-text-primary truncate">
                   {currentImage.name}
                 </h2>
                 <p className="text-sm text-text-muted">
@@ -94,19 +98,19 @@ export function ImageViewModal({
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex overflow-hidden">
-            {/* Image Display */}
-            <div className="flex-1 relative bg-app-bg flex items-center justify-center p-4">
+          <div className="flex-1 flex overflow-hidden min-h-0 min-w-0">
+            {/* Image pane */}
+            <div className="flex-1 relative bg-app-bg flex items-center justify-center p-4 overflow-auto min-h-0 min-w-0">
               <AnimatePresence mode="wait">
                 <motion.img
-                  key={currentImage.id}
+                  key={currentImage._id}
                   src={currentImage.imageURL}
                   alt={currentImage.name}
-                  className="w-full h-full object-contain rounded-lg shadow-lg"
-                  initial={{ opacity: 0, scale: 0.9 }}
+                  className="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg"
+                  initial={{ opacity: 0, scale: 0.98 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.22 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.18 }}
                 />
               </AnimatePresence>
 
@@ -134,9 +138,12 @@ export function ImageViewModal({
             </div>
 
             {/* Sidebar */}
-            <div className="w-80 border-l border-panel-border bg-panel-bg/50 p-4 space-y-4">
+            <div className="w-80 border-l border-panel-border bg-panel-bg/50 p-4 space-y-4 overflow-auto min-h-0">
               <ImageInfoCard image={currentImage} />
-              <ViolationsList violations={currentImage.violations} />
+              <ViolationsList
+                violations={currentImage.violations}
+                aivalidated={currentImage.aivalidated}
+              />
             </div>
           </div>
         </motion.div>

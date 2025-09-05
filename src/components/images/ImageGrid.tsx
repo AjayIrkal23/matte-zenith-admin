@@ -1,8 +1,8 @@
-import { motion } from 'framer-motion';
-import { Eye, AlertTriangle, Calendar, HardDrive } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { motion } from "framer-motion";
+import { Eye, AlertTriangle, Calendar, HardDrive } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Pagination,
   PaginationContent,
@@ -10,24 +10,37 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
-} from '@/components/ui/pagination';
-import { IImage } from '@/types/admin';
+} from "@/components/ui/pagination";
+import { IImage } from "@/types/admin";
 import {
   getSeverityStatusStyle,
   formatFileSize,
   formatDate,
   getPaginationRange,
-} from './utils';
+} from "./utils";
 
 interface ImageGridProps {
   images: IImage[];
-  pagination: { page: number; pageSize: number; total: number; totalPages: number };
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
   onPageChange: (page: number) => void;
   onViewImage: (image: IImage) => void;
 }
 
-export function ImageGrid({ images, pagination, onPageChange, onViewImage }: ImageGridProps) {
-  const pages = getPaginationRange({ page: pagination.page, totalPages: pagination.totalPages });
+export function ImageGrid({
+  images,
+  pagination,
+  onPageChange,
+  onViewImage,
+}: ImageGridProps) {
+  const pages = getPaginationRange({
+    page: pagination.page,
+    totalPages: pagination.totalPages,
+  });
 
   return (
     <div className="space-y-6">
@@ -36,8 +49,12 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
           <div className="w-16 h-16 bg-adani-primary/20 rounded-xl mx-auto mb-4 flex items-center justify-center">
             <AlertTriangle className="w-8 h-8 text-adani-primary" />
           </div>
-          <h3 className="text-lg font-semibold text-text-primary mb-2">No Images Found</h3>
-          <p className="text-text-muted">Upload a ZIP file to get started with image management.</p>
+          <h3 className="text-lg font-semibold text-text-primary mb-2">
+            No Images Found
+          </h3>
+          <p className="text-text-muted">
+            Upload a ZIP file to get started with image management.
+          </p>
         </div>
       ) : (
         <>
@@ -45,7 +62,7 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
             {images.map((image, index) => (
               <motion.div
-                key={image.id}
+                key={image._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -58,12 +75,12 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
-                    
+
                     {/* Overlay with quick actions */}
                     <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="secondary" 
+                      <Button
+                        size="sm"
+                        variant="secondary"
                         className="bg-white/20 backdrop-blur-sm hover:bg-white/30"
                         onClick={() => onViewImage(image)}
                       >
@@ -75,12 +92,30 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                   <CardContent className="p-4 space-y-3">
                     {/* Image Info */}
                     <div>
-                      <h4 className="font-semibold text-text-primary text-sm truncate" title={image.name}>
+                      <h4
+                        className="font-semibold text-text-primary text-sm truncate"
+                        title={image.name}
+                      >
                         {image.name}
                       </h4>
-                      <p className="text-xs text-text-muted truncate" title={image.imagePath}>
+                      <p
+                        className="text-xs text-text-muted truncate"
+                        title={image.imagePath}
+                      >
                         {image.imagePath}
                       </p>
+                    </div>
+
+                    <div className="mt-1">
+                      {image.aivalidated ? (
+                        <Badge className="bg-green-500/20 text-green-600 text-xs">
+                          Completed
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-blue-500/20 text-blue-600 text-xs animate-pulse">
+                          AI Validating…
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Metadata */}
@@ -100,19 +135,28 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                       {image.violations.length > 0 ? (
                         <div className="space-y-1.5">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-text-muted">Violations ({image.violations.length})</span>
+                            <span className="text-xs font-medium text-text-muted">
+                              Violations ({image.violations.length})
+                            </span>
                           </div>
                           <div className="space-y-1">
-                            {image.violations.slice(0, 2).map((violation, idx) => (
-                              <Badge
-                                key={idx}
-                                className={`text-xs px-2 py-1 ${getSeverityStatusStyle(violation.severity)}`}
-                              >
-                                {violation.name}
-                              </Badge>
-                            ))}
+                            {image.violations
+                              .slice(0, 2)
+                              .map((violation, idx) => (
+                                <Badge
+                                  key={idx}
+                                  className={`text-xs px-2 py-1 ${getSeverityStatusStyle(
+                                    violation.severity
+                                  )}`}
+                                >
+                                  {violation.name}
+                                </Badge>
+                              ))}
                             {image.violations.length > 2 && (
-                              <Badge variant="outline" className="text-xs px-2 py-1">
+                              <Badge
+                                variant="outline"
+                                className="text-xs px-2 py-1"
+                              >
                                 +{image.violations.length - 2} more
                               </Badge>
                             )}
@@ -120,7 +164,9 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                         </div>
                       ) : (
                         <div className="text-center py-2">
-                          <span className="text-xs text-text-muted">No violations detected</span>
+                          <span className="text-xs text-text-muted">
+                            No violations detected
+                          </span>
                         </div>
                       )}
                     </div>
@@ -145,9 +191,9 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                         }
                       }}
                       className={`${
-                        pagination.page <= 1 
-                          ? 'opacity-50 cursor-not-allowed' 
-                          : 'hover:bg-hover-overlay text-text-primary'
+                        pagination.page <= 1
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-hover-overlay text-text-primary"
                       }`}
                     />
                   </PaginationItem>
@@ -162,8 +208,8 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                         }}
                         className={`${
                           pageNum === pagination.page
-                            ? 'bg-adani-primary text-white'
-                            : 'hover:bg-hover-overlay text-text-primary'
+                            ? "bg-adani-primary text-white"
+                            : "hover:bg-hover-overlay text-text-primary"
                         }`}
                       >
                         {pageNum}
@@ -181,9 +227,9 @@ export function ImageGrid({ images, pagination, onPageChange, onViewImage }: Ima
                         }
                       }}
                       className={`${
-                        pagination.page >= pagination.totalPages 
-                          ? 'opacity-50 cursor-not-allowed' 
-                          : 'hover:bg-hover-overlay text-text-primary'
+                        pagination.page >= pagination.totalPages
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-hover-overlay text-text-primary"
                       }`}
                     />
                   </PaginationItem>

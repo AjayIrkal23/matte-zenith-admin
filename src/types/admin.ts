@@ -1,7 +1,7 @@
 // Adani Admin Dashboard - Type Definitions
 
 export interface IUser {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   empid: string;
@@ -19,14 +19,14 @@ export interface IViolation {
 }
 
 export interface IImage {
-  id: string;
+  _id: string;
   name: string;
   imageURL: string;
   imagePath: string;
   violations: IViolation[];
   uploadedAt?: string;
   fileSize?: number;
-  // NEW: default from imagesSlice when uploading
+
   aivalidated?: boolean; // default false on upload
 }
 

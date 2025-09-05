@@ -1,15 +1,19 @@
-import { motion } from 'framer-motion';
-import { FileImage } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { IViolation } from '@/types/admin';
-import { getSeverityBadgeStyle } from './utils';
+import { motion } from "framer-motion";
+import { Bot } from "lucide-react"; // robot icon
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { IViolation } from "@/types/admin";
+import { getSeverityBadgeStyle } from "./utils";
 
 interface ViolationsListProps {
   violations: IViolation[];
+  aivalidated: boolean;
 }
 
-export function ViolationsList({ violations }: ViolationsListProps) {
+export function ViolationsList({
+  violations,
+  aivalidated,
+}: ViolationsListProps) {
   return (
     <Card className="glass-panel">
       <CardContent className="p-4">
@@ -31,7 +35,11 @@ export function ViolationsList({ violations }: ViolationsListProps) {
                   <h4 className="font-medium text-text-primary text-sm">
                     {violation.name}
                   </h4>
-                  <Badge className={`text-xs ${getSeverityBadgeStyle(violation.severity)}`}>
+                  <Badge
+                    className={`text-xs ${getSeverityBadgeStyle(
+                      violation.severity
+                    )}`}
+                  >
                     {violation.severity}
                   </Badge>
                 </div>
@@ -43,13 +51,23 @@ export function ViolationsList({ violations }: ViolationsListProps) {
           </div>
         ) : (
           <div className="text-center py-8">
-            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
-              <FileImage className="w-8 h-8 text-green-400" />
-            </div>
-            <p className="text-sm text-text-muted">No violations detected</p>
-            <p className="text-xs text-text-muted mt-1">
-              This image appears to be compliant
+            {/* Animated robot */}
+            <motion.div
+              className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Bot className="w-10 h-10 text-blue-400" />
+            </motion.div>
+
+            <p className="text-sm text-text-primary font-medium">
+              AI is analyzing this image…
             </p>
+            {aivalidated && (
+              <p className="text-xs text-text-muted mt-1">
+                No violations detected — this image appears compliant
+              </p>
+            )}
           </div>
         )}
       </CardContent>
