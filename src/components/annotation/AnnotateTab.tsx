@@ -35,8 +35,10 @@ export default function AnnotateTab() {
   const imagesStatus = useAppSelector(selectImagesStatus);
 
   // Filter images to only show AI validated ones
-  const aiValidatedImages = allImages.filter(image => image.aivalidated === true);
-  
+  const aiValidatedImages = allImages.filter(
+    (image) => image.aivalidated === true
+  );
+
   // Batch management state
   const [currentBatch, setCurrentBatch] = useState(0);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -156,8 +158,9 @@ export default function AnnotateTab() {
   const handleSubmit = async () => {
     if (!currentImage) return;
 
-    const annotatedImage: IAnnotatedImage = {
+    const annotatedImage: any = {
       ...currentImage,
+      image: currentImage._id,
       annotatedAt: new Date().toISOString(),
       annotatedBy: "current-user", // Replace with actual user ID
       validated: true,
@@ -217,7 +220,9 @@ export default function AnnotateTab() {
             <span className="text-2xl">🤖</span>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-text-primary mb-2">No AI Validated Images</h3>
+            <h3 className="text-lg font-medium text-text-primary mb-2">
+              No AI Validated Images
+            </h3>
             <p className="text-text-muted">
               There are no AI validated images available for annotation yet.
             </p>
@@ -235,7 +240,9 @@ export default function AnnotateTab() {
             <span className="text-2xl">📋</span>
           </div>
           <div>
-            <h3 className="text-lg font-medium text-text-primary mb-2">Batch Complete</h3>
+            <h3 className="text-lg font-medium text-text-primary mb-2">
+              Batch Complete
+            </h3>
             <p className="text-text-muted">
               All images in this batch have been processed.
             </p>
@@ -281,17 +288,18 @@ export default function AnnotateTab() {
             <ChevronRight className="w-4 h-4" />
           </Button>
 
-          {currentImageIndex === currentBatchImages.length - 1 && currentBatch < totalBatches - 1 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextBatch}
-              className="btn-adani"
-            >
-              Next Batch
-              <ChevronRight className="w-4 h-4" />
-            </Button>
-          )}
+          {currentImageIndex === currentBatchImages.length - 1 &&
+            currentBatch < totalBatches - 1 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextBatch}
+                className="btn-adani"
+              >
+                Next Batch
+                <ChevronRight className="w-4 h-4" />
+              </Button>
+            )}
 
           {currentBatch > 0 && (
             <Button
