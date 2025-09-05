@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Bot } from "lucide-react"; // robot icon
+import { Bot, ShieldCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { IViolation } from "@/types/admin";
@@ -14,6 +14,10 @@ export function ViolationsList({
   violations,
   aivalidated,
 }: ViolationsListProps) {
+  const hasViolations = violations.length > 0;
+  const isAnalyzing = !aivalidated && !hasViolations;
+  const isClean = aivalidated && !hasViolations;
+
   return (
     <Card className="glass-panel">
       <CardContent className="p-4">
@@ -21,7 +25,7 @@ export function ViolationsList({
           Violations ({violations.length})
         </h3>
 
-        {violations.length > 0 ? (
+        {hasViolations ? (
           <div className="space-y-3">
             {violations.map((violation, index) => (
               <motion.div
@@ -51,22 +55,33 @@ export function ViolationsList({
           </div>
         ) : (
           <div className="text-center py-8">
-            {/* Animated robot */}
-            <motion.div
-              className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3"
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity }}
-            >
-              <Bot className="w-10 h-10 text-blue-400" />
-            </motion.div>
+            {isAnalyzing && (
+              <>
+                <motion.div
+                  className="w-20 h-20 bg-blue-500/20 rounded-full flex items-center justify-center mx-auto mb-3"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  <Bot className="w-10 h-10 text-blue-400" />
+                </motion.div>
+                <p className="text-sm text-text-primary font-medium">
+                  AI is analyzing this image…
+                </p>
+              </>
+            )}
 
-            <p className="text-sm text-text-primary font-medium">
-              AI is analyzing this image…
-            </p>
-            {aivalidated && (
-              <p className="text-xs text-text-muted mt-1">
-                No violations detected — this image appears compliant
-              </p>
+            {isClean && (
+              <>
+                <div className="w-20 h-20 bg-emerald-500/15 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <ShieldCheck className="w-10 h-10 text-emerald-400" />
+                </div>
+                <p className="text-sm text-text-primary font-medium">
+                  No violations detected
+                </p>
+                <p className="text-xs text-text-muted mt-1">
+                  This image appears compliant and looks clean.
+                </p>
+              </>
             )}
           </div>
         )}
