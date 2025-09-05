@@ -21,6 +21,16 @@ export const getSeverityStatusStyle = (severity: string): string => {
   return map[severity] ?? 'bg-gray-500/20 text-gray-300';
 };
 
+export const getSeverityBorderColor = (severity: string): string => {
+  const map: Record<string, string> = {
+    Critical: 'border-red-500',
+    High: 'border-orange-500',
+    Medium: 'border-yellow-500',
+    Low: 'border-blue-500',
+  };
+  return map[severity] ?? 'border-gray-500';
+};
+
 export const formatFileSize = (bytes = 0, decimals = 2): string => {
   if (bytes === 0) return '0 Bytes';
   const k = 1024;

@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { X, ZoomIn, ZoomOut, RotateCcw } from "lucide-react";
 import { IAnnotatedImage } from "@/types/admin";
-import { getSeverityStatusStyle } from "@/components/images/utils";
+import { getSeverityStatusStyle, getSeverityBorderColor } from "@/components/images/utils";
 
 interface ImageViewModalProps {
   isOpen: boolean;
@@ -27,16 +27,6 @@ export default function ImageViewModal({ isOpen, onClose, annotatedImage }: Imag
   const handleReset = () => {
     setZoom(1);
     setPosition({ x: 0, y: 0 });
-  };
-
-  const getSeverityColorForBox = (severity: string) => {
-    const style = getSeverityStatusStyle(severity);
-    // Convert background/text colors to border colors
-    if (style.includes('bg-red')) return 'border-red-500';
-    if (style.includes('bg-orange')) return 'border-orange-500';
-    if (style.includes('bg-yellow')) return 'border-yellow-500';
-    if (style.includes('bg-blue')) return 'border-blue-500';
-    return 'border-gray-500';
   };
 
   return (
@@ -70,48 +60,50 @@ export default function ImageViewModal({ isOpen, onClose, annotatedImage }: Imag
           </div>
         </DialogHeader>
 
-        <div className="flex-1 overflow-hidden relative">
-          <div 
-            className="relative w-full h-full overflow-auto"
+        <div className="flex-1 overflow-auto relative">
+          <div
+            className="relative mx-auto"
             style={{
+              width: annotatedImage.imageWidth,
+              height: annotatedImage.imageHeight,
               transform: `scale(${zoom}) translate(${position.x}px, ${position.y}px)`,
-              transformOrigin: 'center center',
+              transformOrigin: 'top left',
             }}
           >
             <img
               src={annotatedImage.imageURL}
               alt={annotatedImage.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
               draggable={false}
             />
-              
-              {/* Bounding boxes overlay */}
-              {annotatedImage.annotatedViolations.map((violation, index) => (
-                <motion.div
-                  key={violation.bbox.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.2, delay: index * 0.1 }}
-                  className={`absolute border-2 ${getSeverityColorForBox(violation.severity)} bg-transparent pointer-events-none`}
-                  style={{
-                    left: `${violation.bbox.x * 100}%`,
-                    top: `${violation.bbox.y * 100}%`,
-                    width: `${violation.bbox.width * 100}%`,
-                    height: `${violation.bbox.height * 100}%`,
-                  }}
-                >
-                  <div className="absolute -top-8 left-0 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded px-2 py-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs font-medium text-text-primary">
-                        {violation.name}
-                      </span>
-                      <Badge className={`${getSeverityColorForBox(violation.severity)} text-xs`}>
-                        {violation.severity}
-                      </Badge>
-                    </div>
+
+            {/* Bounding boxes overlay */}
+            {annotatedImage.annotatedViolations.map((violation, index) => (
+              <motion.div
+                key={violation.bbox.id}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.2, delay: index * 0.1 }}
+                className={`absolute border-2 ${getSeverityBorderColor(violation.severity)} bg-transparent pointer-events-none`}
+                style={{
+                  left: `${violation.bbox.x * 100}%`,
+                  top: `${violation.bbox.y * 100}%`,
+                  width: `${violation.bbox.width * 100}%`,
+                  height: `${violation.bbox.height * 100}%`,
+                }}
+              >
+                <div className="absolute -top-8 left-0 bg-panel-bg/90 backdrop-blur-sm border border-panel-border rounded px-2 py-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-medium text-text-primary">
+                      {violation.name}
+                    </span>
+                    <Badge className={`${getSeverityStatusStyle(violation.severity)} text-xs`}>
+                      {violation.severity}
+                    </Badge>
                   </div>
-                </motion.div>
-              ))}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
 

@@ -13,6 +13,7 @@ import { CheckCircle, Calendar, User, Eye } from "lucide-react";
 import { format } from "date-fns";
 import ImageViewModal from "./ImageViewModal";
 import { IAnnotatedImage } from "@/types/admin";
+import { getSeverityBorderColor } from "@/components/images/utils";
 
 export default function AnnotatedListTab() {
   const dispatch = useAppDispatch();
@@ -74,12 +75,33 @@ export default function AnnotatedListTab() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {annotatedImages.map((image) => (
           <Card key={image._id} className="glass-panel card-hover">
-            <div className="aspect-video relative overflow-hidden rounded-t-lg">
+            <div
+              className="relative overflow-hidden rounded-t-lg"
+              style={{
+                aspectRatio:
+                  image.imageWidth && image.imageHeight
+                    ? `${image.imageWidth} / ${image.imageHeight}`
+                    : undefined,
+              }}
+            >
               <img
                 src={image.imageURL}
                 alt={image.name}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
+              {/* Bounding boxes overlay */}
+              {image.annotatedViolations.map((violation) => (
+                <div
+                  key={violation.bbox.id}
+                  className={`absolute border-2 ${getSeverityBorderColor(violation.severity)} pointer-events-none`}
+                  style={{
+                    left: `${violation.bbox.x * 100}%`,
+                    top: `${violation.bbox.y * 100}%`,
+                    width: `${violation.bbox.width * 100}%`,
+                    height: `${violation.bbox.height * 100}%`,
+                  }}
+                />
+              ))}
               <div className="absolute top-2 right-2">
                 <Badge className="bg-green-500/20 text-green-300 border-green-500/30">
                   <CheckCircle className="w-3 h-3 mr-1" />
