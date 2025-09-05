@@ -1,29 +1,29 @@
-import { useEffect, useCallback, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { motion, AnimatePresence } from 'framer-motion';
-import { X } from 'lucide-react';
-import { useAppDispatch } from '@/store';
-import { addUser, editUser } from '@/store/slices/usersSlice';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { useEffect, useCallback, useState } from "react";
+import { useForm } from "react-hook-form";
+import { motion, AnimatePresence } from "framer-motion";
+import { X } from "lucide-react";
+import { useAppDispatch } from "@/store";
+import { addUser, editUser } from "@/store/slices/usersSlice";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogDescription,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { toast } from '@/hooks/use-toast';
-import { IUser, UserFormData } from '@/types/admin';
-import { FormModalSkeleton } from '@/components/ui/skeletons';
+} from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
+import { IUser, UserFormData } from "@/types/admin";
+import { FormModalSkeleton } from "@/components/ui/skeletons";
 
 interface UserFormModalProps {
   isOpen: boolean;
@@ -32,16 +32,18 @@ interface UserFormModalProps {
 }
 
 const departments = [
-  'Safety Engineering',
-  'Operations',
-  'Quality Assurance',
-  'Maintenance',
-  'Security',
-  'Administration',
+  "Safety Engineering",
+  "Operations",
+  "Quality Assurance",
+  "Maintenance",
+  "Security",
+  "Administration",
 ];
 
-const inputClass = 'bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20';
-const selectTriggerClass = 'bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50';
+const inputClass =
+  "bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20";
+const selectTriggerClass =
+  "bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50";
 
 export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const dispatch = useAppDispatch();
@@ -57,7 +59,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
     formState: { errors, isSubmitting },
   } = useForm<UserFormData>();
 
-  const watchedDepartment = watch('department');
+  const watchedDepartment = watch("department");
 
   useEffect(() => {
     if (isOpen) {
@@ -81,43 +83,49 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
     }
   }, [user, reset, isOpen]);
 
-  const onSubmit = useCallback(async (data: UserFormData) => {
-    try {
-      if (isEditing && user) {
-        await dispatch(editUser({ empid: user.empid, userData: data })).unwrap();
+  const onSubmit = useCallback(
+    async (data: UserFormData) => {
+      try {
+        if (isEditing && user) {
+          await dispatch(
+            editUser({ empid: user.empid, userData: data })
+          ).unwrap();
+          toast({
+            title: "Success",
+            description: `User ${data.name} updated successfully`,
+          });
+        } else {
+          await dispatch(addUser(data)).unwrap();
+          toast({
+            title: "Success",
+            description: `User ${data.name} created successfully`,
+          });
+        }
+        onClose();
+      } catch (error) {
         toast({
-          title: 'Success',
-          description: `User ${data.name} updated successfully`,
-        });
-      } else {
-        await dispatch(addUser(data)).unwrap();
-        toast({
-          title: 'Success',
-          description: `User ${data.name} created successfully`,
+          title: "Error",
+          description: isEditing
+            ? "Failed to update user"
+            : "Failed to create user",
+          variant: "destructive",
         });
       }
-      onClose();
-    } catch (error) {
-      toast({
-        title: 'Error',
-        description: isEditing ? 'Failed to update user' : 'Failed to create user',
-        variant: 'destructive',
-      });
-    }
-  }, [isEditing, user, dispatch, onClose]);
+    },
+    [isEditing, user, dispatch, onClose]
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[500px] bg-panel-bg border-panel-border">
         <DialogHeader>
           <DialogTitle className="text-text-primary flex items-center justify-between">
-            {isEditing ? 'Edit User' : 'Add New User'}
+            {isEditing ? "Edit User" : "Add New User"}
           </DialogTitle>
           <DialogDescription className="text-text-muted">
-            {isEditing 
-              ? 'Update user information and permissions' 
-              : 'Create a new user account with the required details'
-            }
+            {isEditing
+              ? "Update user information and permissions"
+              : "Create a new user account with the required details"}
           </DialogDescription>
         </DialogHeader>
 
@@ -142,49 +150,64 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
             >
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-text-primary text-sm font-medium">
+                  <Label
+                    htmlFor="name"
+                    className="text-text-primary text-sm font-medium"
+                  >
                     Full Name
                   </Label>
                   <Input
                     id="name"
-                    {...register('name', { required: 'Name is required' })}
+                    {...register("name", { required: "Name is required" })}
                     className={inputClass}
                     placeholder="Enter full name"
                   />
                   {errors.name && (
-                    <p className="text-red-400 text-sm">{errors.name.message}</p>
+                    <p className="text-red-400 text-sm">
+                      {errors.name.message}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="empid" className="text-text-primary text-sm font-medium">
+                  <Label
+                    htmlFor="empid"
+                    className="text-text-primary text-sm font-medium"
+                  >
                     Employee ID
                   </Label>
                   <Input
                     id="empid"
-                    {...register('empid', { required: 'Employee ID is required' })}
+                    {...register("empid", {
+                      required: "Employee ID is required",
+                    })}
                     className={inputClass}
                     placeholder="EMP001"
                   />
                   {errors.empid && (
-                    <p className="text-red-400 text-sm">{errors.empid.message}</p>
+                    <p className="text-red-400 text-sm">
+                      {errors.empid.message}
+                    </p>
                   )}
                 </div>
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-text-primary text-sm font-medium">
+                <Label
+                  htmlFor="email"
+                  className="text-text-primary text-sm font-medium"
+                >
                   Email Address
                 </Label>
                 <Input
                   id="email"
                   type="email"
-                  {...register('email', {
-                    required: 'Email is required',
+                  {...register("email", {
+                    required: "Email is required",
                     pattern: {
                       value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                      message: 'Invalid email address'
-                    }
+                      message: "Invalid email address",
+                    },
                   })}
                   className={inputClass}
                   placeholder="user@adani.com"
@@ -201,42 +224,27 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                   </Label>
                   <Select
                     value={watchedDepartment}
-                    onValueChange={(value) => setValue('department', value)}
+                    onValueChange={(value) => setValue("department", value)}
                   >
                     <SelectTrigger className={selectTriggerClass}>
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
                     <SelectContent className="bg-panel-bg border-panel-border">
                       {departments.map((dept) => (
-                        <SelectItem key={dept} value={dept} className="text-text-primary hover:bg-hover-overlay">
+                        <SelectItem
+                          key={dept}
+                          value={dept}
+                          className="text-text-primary hover:bg-hover-overlay"
+                        >
                           {dept}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                   {errors.department && (
-                    <p className="text-red-400 text-sm">{errors.department.message}</p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="validatedImages" className="text-text-primary text-sm font-medium">
-                    Validated Images
-                  </Label>
-                  <Input
-                    id="validatedImages"
-                    type="number"
-                    min="0"
-                    {...register('validatedImages', {
-                      required: 'Validated images count is required',
-                      valueAsNumber: true,
-                      min: { value: 0, message: 'Must be a positive number' }
-                    })}
-                    className={inputClass}
-                    placeholder="0"
-                  />
-                  {errors.validatedImages && (
-                    <p className="text-red-400 text-sm">{errors.validatedImages.message}</p>
+                    <p className="text-red-400 text-sm">
+                      {errors.department.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -257,9 +265,12 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                   disabled={isSubmitting}
                 >
                   {isSubmitting
-                    ? (isEditing ? 'Updating...' : 'Creating...')
-                    : (isEditing ? 'Update User' : 'Create User')
-                  }
+                    ? isEditing
+                      ? "Updating..."
+                      : "Creating..."
+                    : isEditing
+                    ? "Update User"
+                    : "Create User"}
                 </Button>
               </div>
             </motion.form>
