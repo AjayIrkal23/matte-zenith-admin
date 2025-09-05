@@ -176,6 +176,46 @@ export default function AnnotateTab() {
     }
   };
 
+  const handleSkip = async () => {
+    if (!currentImage) return;
+
+    const annotatedImage: any = {
+      ...currentImage,
+      image: currentImage._id,
+      annotatedAt: new Date().toISOString(),
+      annotatedBy: "current-user", // Replace with actual user ID
+      validated: true,
+      annotatedViolations: [],
+      imageWidth: canvasSize.width,
+      imageHeight: canvasSize.height,
+      usersValidated: [],
+      violations: [],
+    };
+
+    try {
+      await dispatch(submitAnnotatedImage(annotatedImage)).unwrap();
+      toast({
+        title: "Skipped",
+        description: "Image skipped without annotations",
+      });
+      await dispatch(
+        fetchAnnotationCandidates({
+          page: 1,
+          pageSize: 100,
+          onlyValidated: true,
+        })
+      ).unwrap();
+      setCurrentBatch(0);
+      setCurrentImageIndex(0);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to skip annotation",
+        variant: "destructive",
+      });
+    }
+  };
+
   const checkIfAllViolationsAssigned = () => {
     if (currentImageViolations.length === 0) return false;
     return currentImageViolations.every((violation) =>
@@ -259,6 +299,10 @@ export default function AnnotateTab() {
               All Assigned
             </Badge>
           )}
+
+          <Button onClick={handleSkip} className="btn-secondary">
+            Skip Image
+          </Button>
 
           <Button
             onClick={handleSubmit}
