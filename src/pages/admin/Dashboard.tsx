@@ -44,7 +44,7 @@ export default function DashboardPage() {
   const aiHumanDelta = selectAiHumanDelta();
 
   useEffect(() => {
-    dispatch(fetchUsers());
+    dispatch(fetchUsers({}));
     dispatch(fetchImages({ page: 1, pageSize: 50 }));
     dispatch(recomputeLeaderboard());
   }, [dispatch]);

@@ -33,7 +33,7 @@ export default function LeaderboardPage() {
 
   useEffect(() => {
     const loadData = async () => {
-      await dispatch(fetchUsers());
+      await dispatch(fetchUsers({}));
       dispatch(recomputeLeaderboard());
     };
     if (status === "idle") loadData();

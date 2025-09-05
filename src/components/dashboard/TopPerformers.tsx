@@ -9,16 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-
-interface User {
-  id: string;
-  name: string;
-  department: string;
-  validatedImages: number;
-}
+import { IUser } from "@/types/admin";
 
 interface Props {
-  data: User[];
+  data: IUser[];
   variants: any;
 }
 

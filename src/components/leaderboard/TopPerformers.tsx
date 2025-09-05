@@ -45,7 +45,7 @@ const TopPerformers = ({ top3, status }: TopPerformersProps) => {
 
               return (
                 <motion.div
-                  key={user.id}
+                  key={user._id}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{

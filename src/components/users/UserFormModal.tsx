@@ -84,7 +84,7 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const onSubmit = useCallback(async (data: UserFormData) => {
     try {
       if (isEditing && user) {
-        await dispatch(editUser({ id: user.id, userData: data })).unwrap();
+        await dispatch(editUser({ empid: user.empid, userData: data })).unwrap();
         toast({
           title: 'Success',
           description: `User ${data.name} updated successfully`,

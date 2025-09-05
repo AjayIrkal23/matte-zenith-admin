@@ -57,7 +57,7 @@ const LeaderboardTable = ({ users, status }: LeaderboardTableProps) => {
                   const isTopThree = rank <= 3;
                   return (
                     <motion.tr
-                      key={user.id}
+                      key={user._id}
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.3, delay: index * 0.02 }}

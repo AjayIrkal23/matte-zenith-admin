@@ -73,7 +73,7 @@ export default function AnnotatedListTab() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {annotatedImages.map((image) => (
-          <Card key={image.id} className="glass-panel card-hover">
+          <Card key={image._id} className="glass-panel card-hover">
             <div className="aspect-video relative overflow-hidden rounded-t-lg">
               <img
                 src={image.imageURL}

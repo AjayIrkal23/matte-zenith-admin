@@ -93,7 +93,7 @@ export const selectLeaderboardWithRankings = createSelector(
 export const selectUserRank = createSelector(
   [selectLeaderboardAll, (state: RootState, userId: string) => userId],
   (users, userId) => {
-    const userIndex = users.findIndex(user => user.id === userId);
+    const userIndex = users.findIndex(user => user._id === userId);
     return userIndex !== -1 ? userIndex + 1 : null;
   }
 );
