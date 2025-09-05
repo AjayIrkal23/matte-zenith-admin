@@ -21,6 +21,8 @@ import {
 export default function LoginPage() {
   const [empId, setEmpId] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpSentAt, setOtpSentAt] = useState<number | null>(null);
+  const [countdown, setCountdown] = useState(0);
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -34,6 +36,7 @@ export default function LoginPage() {
 
   const isLoading = status === "loading";
   const showOtpField = !!pendingEmpId;
+  const canResendOtp = countdown === 0;
 
   // Redirect if already authenticated
   useEffect(() => {
@@ -48,6 +51,22 @@ export default function LoginPage() {
   useEffect(() => {
     dispatch(clearError());
   }, [dispatch]);
+
+  // Handle OTP countdown timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (otpSentAt && countdown > 0) {
+      interval = setInterval(() => {
+        const elapsed = Math.floor((Date.now() - otpSentAt) / 1000);
+        const remaining = Math.max(0, 120 - elapsed); // 2 minutes = 120 seconds
+        setCountdown(remaining);
+        if (remaining === 0) {
+          setOtpSentAt(null);
+        }
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [otpSentAt, countdown]);
 
   // Show error toast
   useEffect(() => {
@@ -72,6 +91,9 @@ export default function LoginPage() {
 
     try {
       await dispatch(sendOtp(empId)).unwrap();
+      const now = Date.now();
+      setOtpSentAt(now);
+      setCountdown(120); // 2 minutes
       toast({
         title: "OTP Sent",
         description: "Enter the OTP sent to your registered email",
@@ -163,15 +185,22 @@ export default function LoginPage() {
                 {isLoading ? "Sending..." : "Send OTP"}
               </Button>
             ) : (
-              <Button
-                variant="outline"
-                onClick={handleSendOtp}
-                disabled={isLoading}
-                className="w-full"
-              >
-                <Send className="w-4 h-4 mr-2" />
-                {isLoading ? "Sending..." : "Resend OTP"}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  variant="outline"
+                  onClick={handleSendOtp}
+                  disabled={isLoading || !canResendOtp}
+                  className="w-full"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  {isLoading ? "Sending..." : canResendOtp ? "Resend OTP" : `Resend in ${countdown}s`}
+                </Button>
+                {!canResendOtp && (
+                  <p className="text-xs text-text-muted text-center">
+                    Please wait {countdown} seconds before requesting a new OTP
+                  </p>
+                )}
+              </div>
             )}
 
             {/* OTP Field - Animated */}

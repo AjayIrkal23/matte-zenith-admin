@@ -47,6 +47,9 @@ const LeaderboardTable = ({ users, status }: LeaderboardTableProps) => {
                   <TableHead className="text-text-muted">Department</TableHead>
                   <TableHead className="text-text-muted">Employee ID</TableHead>
                   <TableHead className="text-text-muted text-right">
+                    Score
+                  </TableHead>
+                  <TableHead className="text-text-muted text-right">
                     Validated Images
                   </TableHead>
                 </TableRow>
@@ -101,8 +104,17 @@ const LeaderboardTable = ({ users, status }: LeaderboardTableProps) => {
                       </TableCell>
                       <TableCell className="text-right">
                         <span
-                          className={`font-semibold ${
+                          className={`font-bold text-lg ${
                             isTopThree ? "text-adani-primary" : "text-text-primary"
+                          }`}
+                        >
+                          {user.score || user.validatedImages}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <span
+                          className={`font-medium ${
+                            isTopThree ? "text-adani-primary" : "text-text-secondary"
                           }`}
                         >
                           {user.validatedImages}

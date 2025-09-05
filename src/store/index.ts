@@ -6,6 +6,7 @@ import imagesReducer from './slices/imagesSlice';
 import leaderboardReducer from './slices/leaderboardSlice';
 import annotatedImagesReducer from './slices/annotatedImagesSlice';
 import authReducer from './slices/authSlice';
+import departmentReducer from './slices/departmentSlice';
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     images: imagesReducer,
     leaderboard: leaderboardReducer,
     annotatedImages: annotatedImagesReducer,
+    departments: departmentReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
