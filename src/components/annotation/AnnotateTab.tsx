@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
-  fetchImages,
-  selectImages,
-  selectImagesStatus,
-} from "@/store/slices/imagesSlice";
+  fetchAnnotationCandidates,
+  selectAnnotationCandidates,
+  selectAnnotationCandidatesStatus,
+} from "@/store/slices/annotationCandidatesSlice";
 import { submitAnnotatedImage } from "@/store/slices/annotatedImagesSlice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -31,11 +31,11 @@ import {
 
 export default function AnnotateTab() {
   const dispatch = useAppDispatch();
-  const allImages = useAppSelector(selectImages);
-  const imagesStatus = useAppSelector(selectImagesStatus);
+  const allImages = useAppSelector(selectAnnotationCandidates);
+  const imagesStatus = useAppSelector(selectAnnotationCandidatesStatus);
 
-  // Filter images to only show AI validated ones
-  const aiValidatedImages = allImages.filter(image => image.aivalidated === true);
+  // Candidates from backend are already filtered to AI validated images
+  const aiValidatedImages = allImages;
   
   // Batch management state
   const [currentBatch, setCurrentBatch] = useState(0);
@@ -67,7 +67,9 @@ export default function AnnotateTab() {
 
   useEffect(() => {
     if (imagesStatus === "idle") {
-      dispatch(fetchImages({ page: 1, pageSize: 100 })); // Load more images for annotation
+      dispatch(
+        fetchAnnotationCandidates({ page: 1, pageSize: 100, onlyValidated: true })
+      );
     }
   }, [imagesStatus, dispatch]);
 
