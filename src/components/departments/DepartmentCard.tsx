@@ -2,12 +2,12 @@ import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
-import type { Department } from "@/types/department";
+import type { IDepartment } from "@/types/department";
 
 interface DepartmentCardProps {
-  department: Department;
-  onEdit: (department: Department) => void;
-  onDelete: (department: Department) => void;
+  department: IDepartment;
+  onEdit: (department: IDepartment) => void;
+  onDelete: (department: IDepartment) => void;
 }
 
 export function DepartmentCard({ department, onEdit, onDelete }: DepartmentCardProps) {
@@ -19,7 +19,7 @@ export function DepartmentCard({ department, onEdit, onDelete }: DepartmentCardP
             <CardTitle className="text-lg text-text-primary mb-1">
               {department.name}
             </CardTitle>
-            <Badge variant="secondary">{department.userCount} users</Badge>
+            <Badge variant="secondary">{department.employeeCount} users</Badge>
           </div>
           <div className="flex items-center gap-1">
             <Button
