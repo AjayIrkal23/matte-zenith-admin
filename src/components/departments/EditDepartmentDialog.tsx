@@ -14,8 +14,20 @@ import { Button } from "@/components/ui/button";
 interface EditDepartmentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  formData: { name: string; description: string };
-  onChange: (data: { name: string; description: string }) => void;
+  formData: {
+    name: string;
+    description: string;
+    headName: string;
+    headEmail: string;
+  };
+  onChange: (
+    data: {
+      name: string;
+      description: string;
+      headName: string;
+      headEmail: string;
+    }
+  ) => void;
   onConfirm: () => void;
 }
 
@@ -53,6 +65,29 @@ export function EditDepartmentDialog({
               }
               placeholder="Enter department description"
               rows={3}
+            />
+          </div>
+          <div>
+            <Label htmlFor="edit-headName">Head Name</Label>
+            <Input
+              id="edit-headName"
+              value={formData.headName}
+              onChange={(e) =>
+                onChange({ ...formData, headName: e.target.value })
+              }
+              placeholder="Enter head's name"
+            />
+          </div>
+          <div>
+            <Label htmlFor="edit-headEmail">Head Email</Label>
+            <Input
+              id="edit-headEmail"
+              type="email"
+              value={formData.headEmail}
+              onChange={(e) =>
+                onChange({ ...formData, headEmail: e.target.value })
+              }
+              placeholder="Enter head's email"
             />
           </div>
         </div>

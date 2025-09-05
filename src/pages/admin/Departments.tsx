@@ -30,7 +30,12 @@ export default function DepartmentsPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<IDepartment | null>(null);
-  const [formData, setFormData] = useState({ name: "", description: "" });
+  const [formData, setFormData] = useState({
+    name: "",
+    description: "",
+    headName: "",
+    headEmail: "",
+  });
 
   useEffect(() => {
     if (status === "idle") {
@@ -45,13 +50,18 @@ export default function DepartmentsPage() {
   }, [error]);
 
   const handleAdd = () => {
-    setFormData({ name: "", description: "" });
+    setFormData({ name: "", description: "", headName: "", headEmail: "" });
     setShowAddModal(true);
   };
 
   const handleEdit = (department: IDepartment) => {
     setSelectedDepartment(department);
-    setFormData({ name: department.name, description: department.description });
+    setFormData({
+      name: department.name,
+      description: department.description,
+      headName: department.headName,
+      headEmail: department.headEmail,
+    });
     setShowEditModal(true);
   };
 
@@ -61,7 +71,12 @@ export default function DepartmentsPage() {
   };
 
   const confirmAdd = () => {
-    if (!formData.name.trim() || !formData.description.trim()) {
+    if (
+      !formData.name.trim() ||
+      !formData.description.trim() ||
+      !formData.headName.trim() ||
+      !formData.headEmail.trim()
+    ) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -74,8 +89,8 @@ export default function DepartmentsPage() {
       createDepartment({
         name: formData.name.trim(),
         description: formData.description.trim(),
-        headName: "",
-        headEmail: "",
+        headName: formData.headName.trim(),
+        headEmail: formData.headEmail.trim(),
         employeeCount: 0,
         validatedImages: 0,
         averageScore: 0,
@@ -99,7 +114,13 @@ export default function DepartmentsPage() {
   };
 
   const confirmEdit = () => {
-    if (!formData.name.trim() || !formData.description.trim() || !selectedDepartment) {
+    if (
+      !formData.name.trim() ||
+      !formData.description.trim() ||
+      !formData.headName.trim() ||
+      !formData.headEmail.trim() ||
+      !selectedDepartment
+    ) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -114,6 +135,8 @@ export default function DepartmentsPage() {
         updates: {
           name: formData.name.trim(),
           description: formData.description.trim(),
+          headName: formData.headName.trim(),
+          headEmail: formData.headEmail.trim(),
         },
       })
     )

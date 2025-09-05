@@ -1,9 +1,12 @@
 import { useEffect, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { useAppDispatch } from "@/store";
+import { useAppDispatch, useAppSelector } from "@/store";
 import { addUser, editUser } from "@/store/slices/usersSlice";
+import {
+  fetchDepartments,
+  selectDepartments,
+} from "@/store/slices/departmentSlice";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -31,15 +34,6 @@ interface UserFormModalProps {
   user?: IUser | null;
 }
 
-const departments = [
-  "Safety Engineering",
-  "Operations",
-  "Quality Assurance",
-  "Maintenance",
-  "Security",
-  "Administration",
-];
-
 const inputClass =
   "bg-hover-overlay/30 border-panel-border focus:border-adani-primary/50 focus:ring-adani-primary/20";
 const selectTriggerClass =
@@ -47,6 +41,7 @@ const selectTriggerClass =
 
 export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   const dispatch = useAppDispatch();
+  const departments = useAppSelector(selectDepartments);
   const isEditing = !!user;
   const [isFormLoading, setIsFormLoading] = useState(false);
 
@@ -60,6 +55,12 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
   } = useForm<UserFormData>();
 
   const watchedDepartment = watch("department");
+
+  useEffect(() => {
+    if (isOpen && departments.length === 0) {
+      dispatch(fetchDepartments());
+    }
+  }, [isOpen, departments.length, dispatch]);
 
   useEffect(() => {
     if (isOpen) {
@@ -230,15 +231,17 @@ export function UserFormModal({ isOpen, onClose, user }: UserFormModalProps) {
                       <SelectValue placeholder="Select department" />
                     </SelectTrigger>
                     <SelectContent className="bg-panel-bg border-panel-border">
-                      {departments.map((dept) => (
-                        <SelectItem
-                          key={dept}
-                          value={dept}
-                          className="text-text-primary hover:bg-hover-overlay"
-                        >
-                          {dept}
-                        </SelectItem>
-                      ))}
+                      {Array.from(new Set(departments.map((d) => d.name))).map(
+                        (dept) => (
+                          <SelectItem
+                            key={dept}
+                            value={dept}
+                            className="text-text-primary hover:bg-hover-overlay"
+                          >
+                            {dept}
+                          </SelectItem>
+                        )
+                      )}
                     </SelectContent>
                   </Select>
                   {errors.department && (
