@@ -1,7 +1,12 @@
-export interface Department {
-  id: string;
+export interface IDepartment {
+  _id: string;
   name: string;
   description: string;
-  userCount: number;
+  headName: string;
+  headEmail: string;
+  employeeCount: number;
+  validatedImages: number;
+  averageScore: number;
   createdAt: string;
+  updatedAt: string;
 }

@@ -2,14 +2,14 @@ import { Building2, Search } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { DepartmentCard } from "./DepartmentCard";
-import type { Department } from "@/types/department";
+import type { IDepartment } from "@/types/department";
 
 interface DepartmentListProps {
-  departments: Department[];
+  departments: IDepartment[];
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  onEdit: (department: Department) => void;
-  onDelete: (department: Department) => void;
+  onEdit: (department: IDepartment) => void;
+  onDelete: (department: IDepartment) => void;
 }
 
 export function DepartmentList({
@@ -47,7 +47,7 @@ export function DepartmentList({
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filtered.map((department) => (
             <DepartmentCard
-              key={department.id}
+              key={department._id}
               department={department}
               onEdit={onEdit}
               onDelete={onDelete}

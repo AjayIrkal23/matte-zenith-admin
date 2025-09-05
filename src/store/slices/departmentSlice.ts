@@ -3,20 +3,7 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { AsyncStatus } from "@/types/admin";
 import { RootState } from "../index";
 import { api } from "@/lib/api";
-
-// Department interface
-export interface IDepartment {
-  _id: string;
-  name: string;
-  description: string;
-  headName: string;
-  headEmail: string;
-  employeeCount: number;
-  validatedImages: number;
-  averageScore: number;
-  createdAt: string;
-  updatedAt: string;
-}
+import { IDepartment } from "@/types/department";
 
 interface DepartmentState {
   departments: IDepartment[];
