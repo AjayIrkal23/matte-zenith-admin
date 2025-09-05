@@ -10,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  ChevronLeft,
-  ChevronRight,
   Save,
   CheckCircle,
   ZoomIn,
@@ -94,30 +92,6 @@ export default function AnnotateTab() {
     }
   }, [currentImageIndex, currentImage]);
 
-  const handlePrevious = () => {
-    if (currentImageIndex > 0) {
-      setCurrentImageIndex(currentImageIndex - 1);
-    }
-  };
-
-  const handleNext = () => {
-    if (currentImageIndex < currentBatchImages.length - 1) {
-      setCurrentImageIndex(currentImageIndex + 1);
-    }
-  };
-
-  const handleNextBatch = () => {
-    if (currentBatch < totalBatches - 1) {
-      setCurrentBatch(currentBatch + 1);
-    }
-  };
-
-  const handlePreviousBatch = () => {
-    if (currentBatch > 0) {
-      setCurrentBatch(currentBatch - 1);
-    }
-  };
-
   const handleAddViolation = () => {
     setPickerStartInAdd(true);
     setShowViolationPicker(true);
@@ -183,12 +157,16 @@ export default function AnnotateTab() {
         description: "Image annotation submitted successfully",
       });
 
-      // Move to next image or batch
-      if (currentImageIndex < currentBatchImages.length - 1) {
-        handleNext();
-      } else if (currentBatch < totalBatches - 1) {
-        handleNextBatch();
-      }
+      // Refresh batch after submission
+      await dispatch(
+        fetchAnnotationCandidates({
+          page: 1,
+          pageSize: 100,
+          onlyValidated: true,
+        })
+      ).unwrap();
+      setCurrentBatch(0);
+      setCurrentImageIndex(0);
     } catch (error) {
       toast({
         title: "Error",
@@ -262,62 +240,13 @@ export default function AnnotateTab() {
     <div className="space-y-6">
       {/* Navigation Header */}
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePrevious}
-            disabled={currentImageIndex === 0}
-            className="btn-secondary"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Previous
-          </Button>
-
-          <div className="flex flex-col items-center gap-1">
-            <Badge variant="secondary" className="px-3 py-1">
-              {currentImageIndex + 1} of {currentBatchImages.length}
-            </Badge>
-            <Badge variant="outline" className="px-2 py-0.5 text-xs">
-              Batch {currentBatch + 1} of {totalBatches}
-            </Badge>
-          </div>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNext}
-            disabled={currentImageIndex === currentBatchImages.length - 1}
-            className="btn-secondary"
-          >
-            Next
-            <ChevronRight className="w-4 h-4" />
-          </Button>
-
-          {currentImageIndex === currentBatchImages.length - 1 &&
-            currentBatch < totalBatches - 1 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleNextBatch}
-                className="btn-adani"
-              >
-                Next Batch
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            )}
-
-          {currentBatch > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePreviousBatch}
-              className="btn-secondary"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Previous Batch
-            </Button>
-          )}
+        <div className="flex flex-col items-center gap-1">
+          <Badge variant="secondary" className="px-3 py-1">
+            {currentImageIndex + 1} of {currentBatchImages.length}
+          </Badge>
+          <Badge variant="outline" className="px-2 py-0.5 text-xs">
+            Batch {currentBatch + 1} of {totalBatches}
+          </Badge>
         </div>
 
         <div className="flex items-center gap-3">

@@ -223,7 +223,7 @@ export default function ImageCanvas({
         {/* Current drawing box */}
         {drawingState.currentBox && (
           <div
-            className="absolute border-2 border-adani-primary bg-adani-primary/20 pointer-events-none"
+            className="absolute border-2 border-adani-primary pointer-events-none"
             style={{
               left: `${drawingState.currentBox.x * 100}%`,
               top: `${drawingState.currentBox.y * 100}%`,
