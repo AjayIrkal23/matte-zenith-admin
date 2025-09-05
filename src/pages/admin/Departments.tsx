@@ -1,39 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Building2, Plus, Pencil, Trash2, Search } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
-
-interface Department {
-  id: string;
-  name: string;
-  description: string;
-  userCount: number;
-  createdAt: string;
-}
+import { Department } from "@/types/department";
+import { DepartmentList } from "@/components/departments/DepartmentList";
+import { AddDepartmentDialog } from "@/components/departments/AddDepartmentDialog";
+import { EditDepartmentDialog } from "@/components/departments/EditDepartmentDialog";
+import { DeleteDepartmentAlert } from "@/components/departments/DeleteDepartmentAlert";
 
 const initialDepartments: Department[] = [
   {
@@ -80,15 +54,7 @@ export default function DepartmentsPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showDeleteAlert, setShowDeleteAlert] = useState(false);
   const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-  });
-
-  const filteredDepartments = departments.filter((dept) =>
-    dept.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    dept.description.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [formData, setFormData] = useState({ name: "", description: "" });
 
   const handleAdd = () => {
     setFormData({ name: "", description: "" });
@@ -197,173 +163,36 @@ export default function DepartmentsPage() {
         </Button>
       </div>
 
-      <Card className="glass-panel">
-        <CardHeader>
-          <CardTitle className="text-text-primary flex items-center gap-2">
-            <Building2 className="w-6 h-6 text-adani-primary" />
-            Departments ({departments.length})
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-text-muted w-4 h-4" />
-            <Input
-              placeholder="Search departments..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
-            />
-          </div>
+      <DepartmentList
+        departments={departments}
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+      />
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDepartments.map((department) => (
-              <Card key={department.id} className="bg-panel-bg border-panel-border">
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-lg text-text-primary mb-1">
-                        {department.name}
-                      </CardTitle>
-                      <Badge variant="secondary">
-                        {department.userCount} users
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(department)}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(department)}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-text-muted mb-3">
-                    {department.description}
-                  </p>
-                  <p className="text-xs text-text-muted">
-                    Created: {new Date(department.createdAt).toLocaleDateString()}
-                  </p>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+      <AddDepartmentDialog
+        open={showAddModal}
+        onOpenChange={setShowAddModal}
+        formData={formData}
+        onChange={setFormData}
+        onConfirm={confirmAdd}
+      />
 
-          {filteredDepartments.length === 0 && (
-            <div className="text-center py-8">
-              <Building2 className="w-12 h-12 text-text-muted mx-auto mb-4" />
-              <p className="text-text-muted">No departments found</p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <EditDepartmentDialog
+        open={showEditModal}
+        onOpenChange={setShowEditModal}
+        formData={formData}
+        onChange={setFormData}
+        onConfirm={confirmEdit}
+      />
 
-      {/* Add Department Modal */}
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New Department</DialogTitle>
-            <DialogDescription>
-              Create a new department for your organization
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="name">Department Name</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter department name"
-              />
-            </div>
-            <div>
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Enter department description"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={confirmAdd}>Add Department</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Edit Department Modal */}
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit Department</DialogTitle>
-            <DialogDescription>
-              Update department information
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <Label htmlFor="edit-name">Department Name</Label>
-              <Input
-                id="edit-name"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Enter department name"
-              />
-            </div>
-            <div>
-              <Label htmlFor="edit-description">Description</Label>
-              <Textarea
-                id="edit-description"
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                placeholder="Enter department description"
-                rows={3}
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setShowEditModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={confirmEdit}>Update Department</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Delete Confirmation Alert */}
-      <AlertDialog open={showDeleteAlert} onOpenChange={setShowDeleteAlert}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the department
-              "{selectedDepartment?.name}" and may affect user assignments.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-red-600 hover:bg-red-700">
-              Delete
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <DeleteDepartmentAlert
+        open={showDeleteAlert}
+        onOpenChange={setShowDeleteAlert}
+        departmentName={selectedDepartment?.name}
+        onConfirm={confirmDelete}
+      />
     </motion.div>
   );
 }
