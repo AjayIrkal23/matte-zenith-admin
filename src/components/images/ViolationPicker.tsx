@@ -77,7 +77,7 @@ export function ViolationPicker({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-panel-bg border-panel-border">
+      <DialogContent className="sm:max-w-[800px] bg-panel-bg border-panel-border">
         <DialogHeader>
           <DialogTitle className="text-text-primary">
             {isAdding ? "Add New Violation" : "Assign Violation"}
